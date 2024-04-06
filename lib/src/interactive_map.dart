@@ -4,21 +4,46 @@ import 'package:flutter/material.dart';
 import 'package:interactive_country_map/src/map_painter.dart';
 import 'package:interactive_country_map/src/svg/svg_parser.dart';
 
-class InteractiveMap extends StatelessWidget {
+class InteractiveMapTheme {
+  final double zoom;
+
+  InteractiveMapTheme({required this.zoom});
+}
+
+class InteractiveMap extends StatefulWidget {
   const InteractiveMap({super.key});
+
+  @override
+  State<InteractiveMap> createState() => _InteractiveMapState();
+}
+
+class _InteractiveMapState extends State<InteractiveMap> {
+  double _scale = 1;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        _InteractiveMap(
+        GeographicMap(
           file: File(
             "/home/clement/Documents/Projets/librairies/interactive_country_map/assets/france.svg",
           ),
+          theme: InteractiveMapTheme(zoom: _scale),
         ),
-        const Align(
+        Align(
           alignment: Alignment.topRight,
-          child: ZoomInOutButton(),
+          child: ZoomInOutButton(
+            onZoomIn: () {
+              setState(() {
+                _scale = (_scale + 1 <= 8) ? _scale + 1 : _scale;
+              });
+            },
+            onZoomOut: () {
+              setState(() {
+                _scale = (_scale >= 0) ? _scale - 1 : _scale;
+              });
+            },
+          ),
         ),
       ],
     );
@@ -26,30 +51,35 @@ class InteractiveMap extends StatelessWidget {
 }
 
 class ZoomInOutButton extends StatelessWidget {
-  const ZoomInOutButton({super.key});
+  const ZoomInOutButton(
+      {super.key, required this.onZoomIn, required this.onZoomOut});
+
+  final void Function() onZoomIn;
+  final void Function() onZoomOut;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        IconButton(onPressed: () {}, icon: const Icon(Icons.remove)),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.add)),
+        IconButton(onPressed: onZoomOut, icon: const Icon(Icons.remove)),
+        IconButton(onPressed: onZoomIn, icon: const Icon(Icons.add)),
       ],
     );
   }
 }
 
-class _InteractiveMap extends StatefulWidget {
-  const _InteractiveMap({required this.file});
+class GeographicMap extends StatefulWidget {
+  const GeographicMap({super.key, required this.file, required this.theme});
 
   final File file;
+  final InteractiveMapTheme theme;
 
   @override
-  State<_InteractiveMap> createState() => _InteractiveMapState();
+  State<GeographicMap> createState() => _GeographicMapState();
 }
 
-class _InteractiveMapState extends State<_InteractiveMap> {
+class _GeographicMapState extends State<GeographicMap> {
   List<CountryPath> countries = [];
   Offset? cursorPosition;
 
@@ -81,6 +111,7 @@ class _InteractiveMapState extends State<_InteractiveMap> {
         painter: MapPainter(
           countries: countries,
           cursorPosition: cursorPosition,
+          theme: widget.theme,
         ),
       ),
     );

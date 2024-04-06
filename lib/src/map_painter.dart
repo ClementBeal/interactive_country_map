@@ -1,20 +1,26 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart' hide Path;
+import 'package:interactive_country_map/interactive_country_map.dart';
+import 'package:interactive_country_map/src/interactive_map.dart';
 import 'package:interactive_country_map/src/svg/svg_parser.dart';
 
 class MapPainter extends CustomPainter {
   final List<CountryPath> countries;
   final Offset? cursorPosition;
+  final InteractiveMapTheme theme;
 
   MapPainter({
     super.repaint,
     required this.countries,
     required this.cursorPosition,
+    required this.theme,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
+    final scale = theme.zoom;
+
     final paintFiller = Paint()
       ..color = Colors.red.shade200
       ..isAntiAlias = true
@@ -33,13 +39,19 @@ class MapPainter extends CustomPainter {
 
     for (var country in countries) {
       final path = Path();
-      final firstPoint = country.path.points.first;
-      path.moveTo(firstPoint.x, firstPoint.y);
 
-      for (var point in country.path.points.skip(1)) {
-        path.relativeLineTo(point.x, point.y);
+      for (var point in country.path.points) {
+        if (point is MovePoint) {
+          path.relativeMoveTo(point.x * scale, point.y * scale);
+
+          for (var point in point.relativePoints) {
+            path.relativeLineTo(point.x * scale, point.y * scale);
+          }
+        }
+        if (point is ClosePoint) {
+          path.close();
+        }
       }
-      path.close();
 
       canvas.drawPath(path, paintBorder);
       if (cursorPosition != null && path.contains(cursorPosition!)) {

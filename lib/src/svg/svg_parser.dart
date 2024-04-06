@@ -1,7 +1,5 @@
 import 'dart:io';
-import 'dart:math';
 
-import 'package:collection/collection.dart';
 import 'package:xml/xml.dart';
 
 class Point {
@@ -9,37 +7,22 @@ class Point {
   final double y;
 
   Point({required this.x, required this.y});
+}
 
-  Point add(double x, y) {
-    return Point(x: this.x + x, y: this.y + y);
-  }
+class ClosePoint extends Point {
+  ClosePoint() : super(x: 0, y: 0);
+}
 
-  @override
-  String toString() {
-    return "x: $x ; y: $y";
-  }
+class MovePoint extends Point {
+  final List<Point> relativePoints;
+
+  MovePoint(this.relativePoints, {required super.x, required super.y});
 }
 
 class SvgPath {
   final List<Point> points;
 
   SvgPath({required this.points});
-
-  SvgPath normalizePoints() {
-    final minWidth = points.map((e) => e.x).toList().min;
-    final minHeight = points.map((e) => e.y).toList().min;
-
-    print(minWidth);
-
-    print(minHeight);
-
-    return SvgPath(
-      points: points.map((e) {
-        return e.add((minWidth < 0) ? -minWidth : minWidth,
-            (minHeight < 0) ? -minHeight : minHeight);
-      }).toList(),
-    );
-  }
 }
 
 class CountryPath {
@@ -68,15 +51,33 @@ class SvgParser {
     final path = element.getAttribute("d")!.split(" ");
     final newSvgPath = SvgPath(points: []);
 
-    for (var i = 1; i < (path.length - 1); i++) {
-      final coordinates = path[i].split(",");
+    for (var i = 0; i < path.length; i++) {
+      final token = path[i];
 
-      newSvgPath.points.add(
-        Point(
-          x: double.parse(coordinates[0]),
-          y: double.parse(coordinates[1]),
-        ),
-      );
+      if (token == "m" || token == "M") {
+        final firstCoordinates = path[++i].split(",");
+        final movePoints = MovePoint(
+          [],
+          x: double.parse(firstCoordinates[0]),
+          y: double.parse(firstCoordinates[1]),
+        );
+
+        i++;
+
+        while (i < path.length && !["m", "z"].contains(path[i].toLowerCase())) {
+          final point = path[i++].split(",");
+          final newPoint = Point(
+            x: double.parse(point[0]),
+            y: double.parse(point[1]),
+          );
+
+          movePoints.relativePoints.add(newPoint);
+        }
+
+        newSvgPath.points.add(movePoints);
+      } else if (token == "z" || token == "Z") {
+        newSvgPath.points.add(ClosePoint());
+      }
     }
 
     return CountryPath(
