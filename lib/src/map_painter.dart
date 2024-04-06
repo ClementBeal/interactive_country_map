@@ -64,6 +64,6 @@ class MapPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return (oldDelegate as MapPainter).cursorPosition != cursorPosition;
+    return true;
   }
 }

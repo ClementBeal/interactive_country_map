@@ -29,6 +29,7 @@ class _InteractiveMapState extends State<InteractiveMap> {
             "/home/clement/Documents/Projets/librairies/interactive_country_map/assets/france.svg",
           ),
           theme: InteractiveMapTheme(zoom: _scale),
+          // onZoomIn: () {},
         ),
         Align(
           alignment: Alignment.topRight,
@@ -40,7 +41,7 @@ class _InteractiveMapState extends State<InteractiveMap> {
             },
             onZoomOut: () {
               setState(() {
-                _scale = (_scale >= 0) ? _scale - 1 : _scale;
+                _scale = (_scale > 1) ? _scale - 1 : _scale;
               });
             },
           ),
@@ -105,6 +106,9 @@ class _GeographicMapState extends State<GeographicMap> {
         setState(() {
           cursorPosition = details.globalPosition;
         });
+      },
+      onScaleUpdate: (details) {
+        print(details.scale * 1);
       },
       child: CustomPaint(
         size: const Size.square(800),
