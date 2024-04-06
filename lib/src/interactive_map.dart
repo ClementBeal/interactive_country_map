@@ -1,11 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
 import 'package:interactive_country_map/src/map_painter.dart';
 import 'package:interactive_country_map/src/svg/svg_parser.dart';
-import 'package:xml/xml.dart';
 
 class InteractiveMap extends StatelessWidget {
   const InteractiveMap({super.key});
@@ -16,10 +13,10 @@ class InteractiveMap extends StatelessWidget {
       children: [
         _InteractiveMap(
           file: File(
-            "/home/clement/Documents/Projets/librairies/interactive_country_map/assets/bolivia.svg",
+            "/home/clement/Documents/Projets/librairies/interactive_country_map/assets/france.svg",
           ),
         ),
-        Align(
+        const Align(
           alignment: Alignment.topRight,
           child: ZoomInOutButton(),
         ),
@@ -36,15 +33,15 @@ class ZoomInOutButton extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        IconButton(onPressed: () {}, icon: Icon(Icons.remove)),
-        IconButton(onPressed: () {}, icon: Icon(Icons.add)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.remove)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.add)),
       ],
     );
   }
 }
 
 class _InteractiveMap extends StatefulWidget {
-  const _InteractiveMap({super.key, required this.file});
+  const _InteractiveMap({required this.file});
 
   final File file;
 
@@ -54,6 +51,7 @@ class _InteractiveMap extends StatefulWidget {
 
 class _InteractiveMapState extends State<_InteractiveMap> {
   List<CountryPath> countries = [];
+  Offset? cursorPosition;
 
   @override
   void initState() {
@@ -72,10 +70,18 @@ class _InteractiveMapState extends State<_InteractiveMap> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      size: Size.square(800),
-      painter: MapPainter(
-        countries: countries,
+    return GestureDetector(
+      onTapDown: (details) {
+        setState(() {
+          cursorPosition = details.globalPosition;
+        });
+      },
+      child: CustomPaint(
+        size: const Size.square(800),
+        painter: MapPainter(
+          countries: countries,
+          cursorPosition: cursorPosition,
+        ),
       ),
     );
   }

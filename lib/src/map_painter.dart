@@ -5,13 +5,23 @@ import 'package:interactive_country_map/src/svg/svg_parser.dart';
 
 class MapPainter extends CustomPainter {
   final List<CountryPath> countries;
+  final Offset? cursorPosition;
 
-  MapPainter({super.repaint, required this.countries});
+  MapPainter({
+    super.repaint,
+    required this.countries,
+    required this.cursorPosition,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final paintFiller = Paint()
       ..color = Colors.red.shade200
+      ..isAntiAlias = true
+      ..style = PaintingStyle.fill
+      ..strokeWidth = 2.0;
+    final selectedPaintFiller = Paint()
+      ..color = Colors.red.shade100
       ..isAntiAlias = true
       ..style = PaintingStyle.fill
       ..strokeWidth = 2.0;
@@ -32,12 +42,16 @@ class MapPainter extends CustomPainter {
       path.close();
 
       canvas.drawPath(path, paintBorder);
-      canvas.drawPath(path, paintFiller);
+      if (cursorPosition != null && path.contains(cursorPosition!)) {
+        canvas.drawPath(path, selectedPaintFiller);
+      } else {
+        canvas.drawPath(path, paintFiller);
+      }
     }
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+    return (oldDelegate as MapPainter).cursorPosition != cursorPosition;
   }
 }
