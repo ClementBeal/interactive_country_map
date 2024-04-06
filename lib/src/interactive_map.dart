@@ -6,8 +6,14 @@ import 'package:interactive_country_map/src/svg/svg_parser.dart';
 
 class InteractiveMapTheme {
   final double zoom;
+  final Color defaultCountryColor;
+  final Color defaultSelectedCountryColor;
 
-  InteractiveMapTheme({required this.zoom});
+  InteractiveMapTheme({
+    required this.zoom,
+    this.defaultCountryColor = const Color(0xff27ae60),
+    this.defaultSelectedCountryColor = const Color(0xff2ecc71),
+  });
 }
 
 class InteractiveMap extends StatefulWidget {

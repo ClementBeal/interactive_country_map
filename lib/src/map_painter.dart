@@ -22,12 +22,12 @@ class MapPainter extends CustomPainter {
     final scale = theme.zoom;
 
     final paintFiller = Paint()
-      ..color = Colors.red.shade200
+      ..color = theme.defaultCountryColor
       ..isAntiAlias = true
       ..style = PaintingStyle.fill
       ..strokeWidth = 2.0;
     final selectedPaintFiller = Paint()
-      ..color = Colors.red.shade100
+      ..color = theme.defaultSelectedCountryColor
       ..isAntiAlias = true
       ..style = PaintingStyle.fill
       ..strokeWidth = 2.0;
