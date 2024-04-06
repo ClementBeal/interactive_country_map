@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:xml/xml.dart';
 
@@ -23,6 +24,30 @@ class SvgPath {
   final List<Point> points;
 
   SvgPath({required this.points});
+
+  Path toPath(double scale, Offset offset) {
+    final path = Path();
+    var a = false;
+
+    for (var point in points) {
+      if (point is MovePoint) {
+        if (!a) {
+          path.relativeMoveTo(
+              offset.dx + (point.x) * scale, offset.dy + (point.y) * scale);
+          a = true;
+        } else {
+          path.relativeMoveTo((point.x) * scale, (point.y) * scale);
+        }
+        for (var point in point.relativePoints) {
+          path.relativeLineTo((point.x) * scale, (point.y) * scale);
+        }
+      }
+      if (point is ClosePoint) {
+        path.close();
+      }
+    }
+    return path;
+  }
 }
 
 class CountryPath {

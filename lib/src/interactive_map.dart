@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:interactive_country_map/src/map_painter.dart';
 import 'package:interactive_country_map/src/svg/svg_parser.dart';
@@ -17,7 +18,9 @@ class InteractiveMapTheme {
 }
 
 class InteractiveMap extends StatefulWidget {
-  const InteractiveMap({super.key});
+  const InteractiveMap({super.key, required this.onCountrySelected});
+
+  final void Function(String code) onCountrySelected;
 
   @override
   State<InteractiveMap> createState() => _InteractiveMapState();
@@ -30,12 +33,15 @@ class _InteractiveMapState extends State<InteractiveMap> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        GeographicMap(
-          file: File(
-            "/home/clement/Documents/Projets/librairies/interactive_country_map/assets/france.svg",
+        Center(
+          child: GeographicMap(
+            file: File(
+              "/home/clement/Documents/Projets/librairies/interactive_country_map/assets/france.svg",
+            ),
+            theme: InteractiveMapTheme(zoom: _scale),
+            onCountrySelected: widget.onCountrySelected,
+            // onZoomIn: () {},
           ),
-          theme: InteractiveMapTheme(zoom: _scale),
-          // onZoomIn: () {},
         ),
         Align(
           alignment: Alignment.topRight,
@@ -77,10 +83,15 @@ class ZoomInOutButton extends StatelessWidget {
 }
 
 class GeographicMap extends StatefulWidget {
-  const GeographicMap({super.key, required this.file, required this.theme});
+  const GeographicMap(
+      {super.key,
+      required this.file,
+      required this.theme,
+      required this.onCountrySelected});
 
   final File file;
   final InteractiveMapTheme theme;
+  final void Function(String code) onCountrySelected;
 
   @override
   State<GeographicMap> createState() => _GeographicMapState();
@@ -89,6 +100,7 @@ class GeographicMap extends StatefulWidget {
 class _GeographicMapState extends State<GeographicMap> {
   List<CountryPath> countries = [];
   Offset? cursorPosition;
+  Offset offset = Offset.zero;
 
   @override
   void initState() {
@@ -110,17 +122,34 @@ class _GeographicMapState extends State<GeographicMap> {
     return GestureDetector(
       onTapDown: (details) {
         setState(() {
-          cursorPosition = details.globalPosition;
+          cursorPosition = details.localPosition;
+        });
+
+        final selectedCountry = countries.firstWhereOrNull((element) =>
+            element.path.toPath(1, offset).contains(details.localPosition));
+
+        if (selectedCountry != null) {
+          widget.onCountrySelected(selectedCountry.countryCode);
+        }
+      },
+      onPanUpdate: (details) {
+        setState(() {
+          offset = offset + details.delta;
         });
       },
-      onScaleUpdate: (details) {
-        print(details.scale * 1);
-      },
+      // onScaleUpdate: (details) {
+      //   // print(details.scale * 1);
+
+      //   setState(() {
+      //     offset = offset + details.localFocalPoint;
+      //   });
+      // },
       child: CustomPaint(
         size: const Size.square(800),
         painter: MapPainter(
           countries: countries,
           cursorPosition: cursorPosition,
+          offset: offset,
           theme: widget.theme,
         ),
       ),
