@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:xml/xml.dart';
@@ -58,9 +57,7 @@ class CountryPath {
 }
 
 class SvgParser {
-  Future<List<CountryPath>> parse(File svgFile) async {
-    final data = await svgFile.readAsString();
-
+  Future<List<CountryPath>> parse(String data) async {
     final xml = XmlDocument.parse(data);
 
     return xml.findAllElements("path").map((e) => _getCountryPath(e)).toList();
