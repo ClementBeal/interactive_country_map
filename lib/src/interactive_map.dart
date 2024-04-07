@@ -17,8 +17,6 @@ class InteractiveMap extends StatefulWidget {
 }
 
 class _InteractiveMapState extends State<InteractiveMap> {
-  double _scale = 1;
-
   String? svgData;
 
   @override
@@ -50,40 +48,6 @@ class _InteractiveMapState extends State<InteractiveMap> {
               onCountrySelected: widget.onCountrySelected,
             ),
           ),
-        Align(
-          alignment: Alignment.topRight,
-          child: ZoomInOutButton(
-            onZoomIn: () {
-              setState(() {
-                _scale = (_scale + 1 <= 8) ? _scale + 1 : _scale;
-              });
-            },
-            onZoomOut: () {
-              setState(() {
-                _scale = (_scale > 1) ? _scale - 1 : _scale;
-              });
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class ZoomInOutButton extends StatelessWidget {
-  const ZoomInOutButton(
-      {super.key, required this.onZoomIn, required this.onZoomOut});
-
-  final void Function() onZoomIn;
-  final void Function() onZoomOut;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(onPressed: onZoomOut, icon: const Icon(Icons.remove)),
-        IconButton(onPressed: onZoomIn, icon: const Icon(Icons.add)),
       ],
     );
   }
