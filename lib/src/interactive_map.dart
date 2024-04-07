@@ -1,16 +1,21 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:interactive_country_map/src/Interactive_map_theme.dart';
+import 'package:interactive_country_map/src/interactive_map_theme.dart';
 import 'package:interactive_country_map/src/map_entity.dart';
 import 'package:interactive_country_map/src/map_painter.dart';
 import 'package:interactive_country_map/src/svg/svg_parser.dart';
 
 class InteractiveMap extends StatefulWidget {
-  const InteractiveMap(
-      {super.key, required this.onCountrySelected, required this.map});
+  const InteractiveMap({
+    super.key,
+    required this.onCountrySelected,
+    required this.map,
+    this.theme = const InteractiveMapTheme(),
+  });
 
   final void Function(String code) onCountrySelected;
   final MapEntity map;
+  final InteractiveMapTheme theme;
 
   @override
   State<InteractiveMap> createState() => _InteractiveMapState();
@@ -52,9 +57,7 @@ class _InteractiveMapState extends State<InteractiveMap> {
           Center(
             child: GeographicMap(
               svgData: svgData!,
-              theme: InteractiveMapTheme(
-                zoom: 1,
-              ),
+              theme: widget.theme,
               onCountrySelected: widget.onCountrySelected,
             ),
           ),

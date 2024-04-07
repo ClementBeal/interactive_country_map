@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart' hide Path;
-import 'package:interactive_country_map/src/Interactive_map_theme.dart';
+import 'package:interactive_country_map/src/interactive_map_theme.dart';
 import 'package:interactive_country_map/src/svg/svg_parser.dart';
 
 class MapPainter extends CustomPainter {
@@ -18,33 +18,40 @@ class MapPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final scale = theme.zoom;
+    const scale = 1.0;
 
     final paintFiller = Paint()
       ..color = theme.defaultCountryColor
       ..isAntiAlias = true
-      ..style = PaintingStyle.fill
-      ..strokeWidth = 2.0;
+      ..style = PaintingStyle.fill;
+
     final selectedPaintFiller = Paint()
       ..color = theme.defaultSelectedCountryColor
       ..isAntiAlias = true
-      ..style = PaintingStyle.fill
-      ..strokeWidth = 2.0;
+      ..style = PaintingStyle.fill;
+
     final paintBorder = Paint()
-      ..color = Colors.white
+      ..color = theme.borderColor
       ..isAntiAlias = true
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
+      ..strokeWidth = theme.borderWidth;
+    final selectedPaintBorder = Paint()
+      ..color = theme.borderColor
+      ..isAntiAlias = true
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = theme.selectedBorderWidth;
 
     for (var country in countries) {
       final path = country.path.toPath(scale, offset);
-
-      canvas.drawPath(path, paintBorder);
+      paintFiller.color =
+          theme.mappingCode?[country.countryCode] ?? theme.defaultCountryColor;
 
       if (cursorPosition != null && path.contains(cursorPosition!)) {
         canvas.drawPath(path, selectedPaintFiller);
+        canvas.drawPath(path, selectedPaintBorder);
       } else {
         canvas.drawPath(path, paintFiller);
+        canvas.drawPath(path, paintBorder);
       }
     }
   }
