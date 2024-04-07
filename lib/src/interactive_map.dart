@@ -13,15 +13,23 @@ class InteractiveMap extends StatefulWidget {
     this.theme = const InteractiveMapTheme(),
     this.controller,
     this.loadingWidget,
-  });
+    this.minZoom = 0.5,
+    this.maxZoom = 12,
+  }) : assert(minZoom > 0);
 
   final void Function(String code) onCountrySelected;
   final MapEntity map;
   final InteractiveMapTheme theme;
   final InteractiveMapController? controller;
 
-  // The widget we display during the loading of the map
+  // Widget we display during the loading of the map
   final Widget? loadingWidget;
+
+  // Minimum value of a zoom. Must be greater than 0
+  final double minZoom;
+
+  // Maximum zoom value
+  final double maxZoom;
 
   @override
   State<InteractiveMap> createState() => _InteractiveMapState();
@@ -63,6 +71,8 @@ class _InteractiveMapState extends State<InteractiveMap> {
           svgData: svgData!,
           theme: widget.theme,
           onCountrySelected: widget.onCountrySelected,
+          minZoom: widget.minZoom,
+          maxZoom: widget.maxZoom,
         ),
       );
     } else {
@@ -72,15 +82,22 @@ class _InteractiveMapState extends State<InteractiveMap> {
 }
 
 class GeographicMap extends StatefulWidget {
-  const GeographicMap(
-      {super.key,
-      required this.svgData,
-      required this.theme,
-      required this.onCountrySelected});
+  const GeographicMap({
+    super.key,
+    required this.svgData,
+    required this.theme,
+    required this.onCountrySelected,
+    required this.minZoom,
+    required this.maxZoom,
+  });
 
   final String svgData;
   final InteractiveMapTheme theme;
   final void Function(String code) onCountrySelected;
+
+  final double minZoom;
+
+  final double maxZoom;
 
   @override
   State<GeographicMap> createState() => _GeographicMapState();
@@ -140,7 +157,13 @@ class _GeographicMapState extends State<GeographicMap> {
         onScaleUpdate: (details) {
           setState(() {
             offset = offset + details.focalPointDelta;
-            _scale = _draggingScale * details.scale;
+            cursorPosition = details.localFocalPoint;
+
+            final possibleNewScale = _draggingScale * details.scale;
+            if (widget.minZoom <= possibleNewScale &&
+                possibleNewScale <= widget.maxZoom) {
+              _scale = _draggingScale * details.scale;
+            }
           });
         },
         child: CustomPaint(
