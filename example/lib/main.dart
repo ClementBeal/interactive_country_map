@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
                     selectedRegion = code;
                   });
                 },
-                map: MapEntity.australia,
+                map: MapEntity.vietnam,
               ),
             ),
             if (selectedRegion != null)

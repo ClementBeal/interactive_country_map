@@ -19,6 +19,10 @@ class MovePoint extends Point {
   MovePoint(this.relativePoints, {required super.x, required super.y});
 }
 
+class LinePoint extends Point {
+  LinePoint({required super.x, required super.y});
+}
+
 class SvgPath {
   final List<Point> points;
 
@@ -43,6 +47,9 @@ class SvgPath {
       }
       if (point is ClosePoint) {
         path.close();
+      }
+      if (point is LinePoint) {
+        path.relativeLineTo(point.x, point.y);
       }
     }
     return path;
@@ -76,7 +83,7 @@ class SvgParser {
     for (var i = 0; i < path.length; i++) {
       final token = path[i];
 
-      if (token == "m" || token == "M") {
+      if (token == "m") {
         final firstCoordinates = path[++i].split(",");
         final movePoints = MovePoint(
           [],
@@ -86,7 +93,8 @@ class SvgParser {
 
         i++;
 
-        while (i < path.length && !["m", "z"].contains(path[i].toLowerCase())) {
+        while (i < path.length &&
+            !["m", "z", "l"].contains(path[i].toLowerCase())) {
           final point = path[i++].split(",");
           final newPoint = Point(
             x: double.parse(point[0]),
@@ -97,8 +105,14 @@ class SvgParser {
         }
 
         newSvgPath.points.add(movePoints);
-      } else if (token == "z" || token == "Z") {
+      } else if (token == "z") {
         newSvgPath.points.add(ClosePoint());
+      } else if (token == "l") {
+        final coordinates = path[++i].split(",");
+        newSvgPath.points.add(LinePoint(
+          x: double.parse(coordinates[0]),
+          y: double.parse(coordinates[1]),
+        ));
       }
     }
 
