@@ -23,17 +23,25 @@ class _InteractiveMapState extends State<InteractiveMap> {
   void initState() {
     super.initState();
 
-    Future.delayed(
-      Durations.extralong4,
-      () async {
-        final tmp = await DefaultAssetBundle.of(context).loadString(
-            "packages/interactive_country_map/res/maps/${widget.map.filename}.svg");
+    Future.delayed(Duration.zero, loadMap);
+  }
 
-        setState(() {
-          svgData = tmp;
-        });
-      },
-    );
+  @override
+  void didUpdateWidget(InteractiveMap oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.map.name != widget.map.name) {
+      loadMap();
+    }
+  }
+
+  Future<void> loadMap() async {
+    final tmp = await DefaultAssetBundle.of(context).loadString(
+        "packages/interactive_country_map/res/maps/${widget.map.filename}.svg");
+
+    setState(() {
+      svgData = tmp;
+    });
   }
 
   @override
@@ -44,7 +52,9 @@ class _InteractiveMapState extends State<InteractiveMap> {
           Center(
             child: GeographicMap(
               svgData: svgData!,
-              theme: InteractiveMapTheme(zoom: _scale),
+              theme: InteractiveMapTheme(
+                zoom: 1,
+              ),
               onCountrySelected: widget.onCountrySelected,
             ),
           ),
@@ -80,6 +90,15 @@ class _GeographicMapState extends State<GeographicMap> {
     _parseSvg();
   }
 
+  @override
+  void didUpdateWidget(GeographicMap oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.svgData != widget.svgData) {
+      _parseSvg();
+    }
+  }
+
   Future<void> _parseSvg() async {
     final newPaths = await SvgParser().parse(widget.svgData);
 
@@ -109,13 +128,6 @@ class _GeographicMapState extends State<GeographicMap> {
             offset = offset + details.focalPointDelta;
           });
         },
-        // onScaleUpdate: (details) {
-        //   // print(details.scale * 1);
-
-        //   setState(() {
-        //     offset = offset + details.localFocalPoint;
-        //   });
-        // },
         child: CustomPaint(
           size: Size(constraints.maxWidth, constraints.maxHeight),
           painter: MapPainter(

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:interactive_country_map/interactive_country_map.dart';
@@ -15,6 +17,27 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String? selectedRegion;
+  MapEntity map = MapEntity.colombia;
+
+  @override
+  void initState() {
+    super.initState();
+
+    var counter = 0;
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        map = switch (counter) {
+          0 => MapEntity.france,
+          1 => MapEntity.chile,
+          _ => MapEntity.china,
+        };
+      });
+
+      if (counter++ > 3) {
+        timer.cancel();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +54,7 @@ class _MyAppState extends State<MyApp> {
                     selectedRegion = code;
                   });
                 },
-                map: MapEntity.vietnam,
+                map: map,
               ),
             ),
             if (selectedRegion != null)
