@@ -7,6 +7,7 @@ class MapPainter extends CustomPainter {
   final Offset? cursorPosition;
   final InteractiveMapTheme theme;
   final Offset offset;
+  final double scale;
 
   MapPainter({
     super.repaint,
@@ -14,12 +15,11 @@ class MapPainter extends CustomPainter {
     required this.cursorPosition,
     required this.theme,
     required this.offset,
+    required this.scale,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    const scale = 1.0;
-
     final paintFiller = Paint()
       ..color = theme.defaultCountryColor
       ..isAntiAlias = true

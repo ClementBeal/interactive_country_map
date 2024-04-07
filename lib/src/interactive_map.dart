@@ -91,6 +91,9 @@ class _GeographicMapState extends State<GeographicMap> {
   Offset? cursorPosition;
   Offset offset = Offset.zero;
 
+  double _scale = 1.0;
+  double _draggingScale = 1.0;
+
   @override
   void initState() {
     super.initState();
@@ -131,9 +134,13 @@ class _GeographicMapState extends State<GeographicMap> {
             widget.onCountrySelected(selectedCountry.countryCode);
           }
         },
+        onScaleStart: (details) {
+          _draggingScale = _scale;
+        },
         onScaleUpdate: (details) {
           setState(() {
             offset = offset + details.focalPointDelta;
+            _scale = _draggingScale * details.scale;
           });
         },
         child: CustomPaint(
@@ -143,6 +150,7 @@ class _GeographicMapState extends State<GeographicMap> {
             cursorPosition: cursorPosition,
             offset: offset,
             theme: widget.theme,
+            scale: _scale,
           ),
         ),
       ),
