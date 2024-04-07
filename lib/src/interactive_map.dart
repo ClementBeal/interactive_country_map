@@ -11,11 +11,17 @@ class InteractiveMap extends StatefulWidget {
     required this.onCountrySelected,
     required this.map,
     this.theme = const InteractiveMapTheme(),
+    this.controller,
+    this.loadingWidget,
   });
 
   final void Function(String code) onCountrySelected;
   final MapEntity map;
   final InteractiveMapTheme theme;
+  final InteractiveMapController? controller;
+
+  // The widget we display during the loading of the map
+  final Widget? loadingWidget;
 
   @override
   State<InteractiveMap> createState() => _InteractiveMapState();
@@ -51,18 +57,17 @@ class _InteractiveMapState extends State<InteractiveMap> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        if (svgData != null)
-          Center(
-            child: GeographicMap(
-              svgData: svgData!,
-              theme: widget.theme,
-              onCountrySelected: widget.onCountrySelected,
-            ),
-          ),
-      ],
-    );
+    if (svgData != null) {
+      return Center(
+        child: GeographicMap(
+          svgData: svgData!,
+          theme: widget.theme,
+          onCountrySelected: widget.onCountrySelected,
+        ),
+      );
+    } else {
+      return widget.loadingWidget ?? const SizedBox.shrink();
+    }
   }
 }
 
@@ -143,4 +148,8 @@ class _GeographicMapState extends State<GeographicMap> {
       ),
     );
   }
+}
+
+class InteractiveMapController {
+  InteractiveMapController();
 }

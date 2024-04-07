@@ -27,14 +27,20 @@ class _MyAppState extends State<MyApp> {
             Expanded(
               child: InteractiveMap(
                 theme: InteractiveMapTheme(
-                    borderColor: Colors.red.shade200,
-                    borderWidth: 2.0,
-                    selectedBorderWidth: 3.0,
-                    defaultCountryColor: Colors.green.shade700,
-                    defaultSelectedCountryColor: Colors.orange.shade300,
-                    mappingCode: {
-                      "FR-U": Colors.black,
-                    }),
+                  borderColor: Colors.red.shade200,
+                  borderWidth: 2.0,
+                  selectedBorderWidth: 3.0,
+                  defaultCountryColor: Colors.green.shade700,
+                  defaultSelectedCountryColor: Colors.orange.shade300,
+                  mappingCode: {
+                    "FR-U": Colors.black,
+                  },
+                ),
+                loadingWidget: Container(
+                  color: Colors.red,
+                  width: 100,
+                  height: 100,
+                ),
                 onCountrySelected: (code) {
                   setState(() {
                     selectedRegion = code;
