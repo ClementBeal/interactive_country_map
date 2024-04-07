@@ -30,14 +30,15 @@ class SvgPath {
 
   Path toPath(double scale, Offset offset) {
     final path = Path();
-    var a = false;
+    var hasAddedOffset = false;
 
     for (var point in points) {
       if (point is MovePoint) {
-        if (!a) {
+        // because the path is relative, we only add the offset to the first point
+        if (!hasAddedOffset) {
           path.relativeMoveTo(
               offset.dx + (point.x) * scale, offset.dy + (point.y) * scale);
-          a = true;
+          hasAddedOffset = true;
         } else {
           path.relativeMoveTo((point.x) * scale, (point.y) * scale);
         }
