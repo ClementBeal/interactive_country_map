@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart' hide Path;
-import 'package:interactive_country_map/src/interactive_map.dart';
+import 'package:interactive_country_map/src/Interactive_map_theme.dart';
 import 'package:interactive_country_map/src/svg/svg_parser.dart';
 
 class MapPainter extends CustomPainter {
