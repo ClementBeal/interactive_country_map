@@ -205,7 +205,7 @@ class _GeographicMapState extends State<GeographicMap> {
         },
         onScaleUpdate: (details) {
           setState(() {
-            offset = offset + details.focalPointDelta - Offset(1, 1);
+            offset = offset + details.focalPointDelta;
             cursorPosition = details.localFocalPoint;
 
             final possibleNewScale = _draggingScale * details.scale;
