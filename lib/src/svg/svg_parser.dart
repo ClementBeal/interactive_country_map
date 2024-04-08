@@ -130,6 +130,7 @@ class SvgParser {
 
   CountryPath _getCountryPath(XmlElement element) {
     final countryCode = element.getAttribute("id");
+    print(element);
 
     if (countryCode == null) {
       throw Exception();
@@ -138,17 +139,17 @@ class SvgParser {
     final List<String> path;
     final pathString = element.getAttribute("d")!;
 
-    if (pathString.contains(" ")) {
-      path = pathString.split(" ");
-    } else {
-      path = pathString
-          .replaceAllMapped(
-              RegExp(r"[a-zA-Z]"), (match) => " ${match.group(0)} ")
-          .trim()
-          .split(" ")
-          .where((element) => element.isNotEmpty)
-          .toList();
-    }
+    path = pathString
+        .replaceAllMapped(RegExp(r"(\S)?([mlhvzMLHVZ])"), (match) {
+          if (match.group(1) != null) {
+            return "${match.group(1)} ${match.group(2)} ";
+          }
+          return "${match.group(2)} ";
+        })
+        .trim()
+        .split(" ")
+        .where((element) => element.isNotEmpty)
+        .toList();
 
     final newSvgPath = SvgPath(points: []);
 
