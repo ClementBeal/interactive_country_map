@@ -53,14 +53,11 @@ class _MyAppState extends State<MyApp> {
               child: InteractiveMap(
                 controller: controller,
                 theme: InteractiveMapTheme(
-                  borderColor: Colors.red.shade200,
-                  borderWidth: 2.0,
+                  borderColor: Colors.green.shade800,
+                  borderWidth: 1.0,
                   selectedBorderWidth: 3.0,
-                  defaultCountryColor: Colors.green.shade700,
-                  defaultSelectedCountryColor: Colors.orange.shade300,
-                  mappingCode: {
-                    "FR-U": Colors.black,
-                  },
+                  defaultCountryColor: Colors.green.shade300,
+                  defaultSelectedCountryColor: Colors.green.shade200,
                 ),
                 loadingWidget: Container(
                   color: Colors.red,

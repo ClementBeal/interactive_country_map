@@ -22,8 +22,8 @@ class InteractiveMapTheme {
   final Color borderColor;
 
   const InteractiveMapTheme({
-    this.defaultCountryColor = const Color(0xff27ae60),
-    this.defaultSelectedCountryColor = const Color(0xff2ecc71),
+    this.defaultCountryColor = const Color(0xff60435f),
+    this.defaultSelectedCountryColor = const Color(0xff845c83),
     this.mappingCode,
     this.borderWidth = 2.0,
     this.selectedBorderWidth = 3.0,
