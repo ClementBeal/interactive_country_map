@@ -63,7 +63,8 @@ class _MyAppState extends State<MyApp> {
                   currentScale: _currentScale,
                   markers: [
                     MarkerGroup(
-                      color: Colors.pink.shade300,
+                      borderColor: Colors.pink.shade600,
+                      backgroundColor: Colors.pink.shade300,
                       markers: [
                         Marker(x: 30, y: 40),
                         Marker(x: 130, y: 440),

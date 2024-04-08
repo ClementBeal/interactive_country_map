@@ -19,15 +19,30 @@ class MarkerPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final pointPainter = Paint()
+    final borderPointPainter = Paint()
       ..strokeWidth = 6
       ..isAntiAlias = true
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
 
-    for (var markerGroup in markers) {
-      pointPainter.color = markerGroup.color;
+    final pointPainter = Paint()
+      ..strokeWidth = 5
+      ..isAntiAlias = true
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
 
+    for (var markerGroup in markers) {
+      borderPointPainter.color = markerGroup.borderColor;
+      pointPainter.color = markerGroup.backgroundColor;
+
+      // draw border
+      canvas.drawPoints(
+        PointMode.points,
+        markerGroup.markers.map((e) => Offset(e.x, e.y)).toList(),
+        borderPointPainter,
+      );
+
+      // draw background
       canvas.drawPoints(
         PointMode.points,
         markerGroup.markers.map((e) => Offset(e.x, e.y)).toList(),

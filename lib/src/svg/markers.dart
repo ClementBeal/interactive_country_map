@@ -9,7 +9,12 @@ class Marker {
 
 class MarkerGroup {
   final List<Marker> markers;
-  final Color color;
+  final Color borderColor;
+  final Color backgroundColor;
 
-  MarkerGroup({required this.markers, required this.color});
+  MarkerGroup({
+    required this.markers,
+    required this.borderColor,
+    required this.backgroundColor,
+  });
 }
