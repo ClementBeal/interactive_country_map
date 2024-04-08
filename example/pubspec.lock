@@ -76,7 +76,7 @@ packages:
     source: sdk
     version: "0.0.0"
   interactive_country_map:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       path: ".."
       relative: true
