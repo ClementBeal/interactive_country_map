@@ -54,7 +54,6 @@ class MarkerPainter extends CustomPainter {
   Offset _getOffset(AMarker marker, Size size) {
     return switch (marker) {
       Marker m => Offset(m.x, m.y),
-      GeoMarker m => m.translate(countryMap, size),
     };
   }
 

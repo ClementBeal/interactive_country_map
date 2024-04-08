@@ -1,20 +1,73 @@
 # Interactive country map
 
-The purpose of this package is to to draw of a country 
+The purpose of this package is to to draw an interactive map of a country or region where you can select region.
 
 
-## Features
+## Demo
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+## How does it work?
 
-## Getting started
+The SVG maps are defined by several `<path>` tags. Because it's XML, we can define an `id` for each of them. The ids are unique and define by the [ISO_3166-2](https://en.wikipedia.org/wiki/ISO_3166-2).  
+When a country is selected, its `id` is returned.
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+## Docs
 
+### Interactive map
+
+Use the `InteractiveMap` in your code to add an interactive map. Then, choose among the `MapEntity` enum the map you need.  
+You can customize the theme of your map using `InteractiveMapTheme`.
+
+The `onCountryChanged` argument will receive the code of the selected country/region. All the codes are defined by the [ISO_3166-2](https://en.wikipedia.org/wiki/ISO_3166-2).
+
+The library is only returning country codes. It's your role to understand them and adapt your own widgets.
+
+### Color mapping
+
+You might want to use different colors for your region. For instance, all the countries starting with `A` will be in blue and the ones starting with `B` will be in red.
+
+Add in your interactive map theme the following code:
+
+```dart
+mappingCode: {
+    ...MappingHelper.sameColor(
+    Colors.green.shade300,
+    [
+        "FR-A",
+        "FR-B",
+        "FR-C",
+        "FR-D",
+        "FR-E",
+    ],
+    )
+},
+```
+
+The `mappingCode` accepts a `Map<String, Color>` when the string is the region code.  
+`MappingHelper.sameColor` is an helper to build your dictionnary. It will map a list to the specified color.
+
+### Markers
+
+You have the choice between 2 types of markers:
+
+- `Marker`: use the cartesian coordinates to place the marker
+- `GeoMarker` (TODO): use the lat/long to place the marker at the correct position on the map
+
+Then, you use a `MarkerGroup` to gather the markers and give them properties:
+
+```dart
+MarkerGroup(
+    borderColor: Colors.pink.shade600,
+    backgroundColor: Colors.pink.shade300,
+    markers: [
+        Marker(x: 30, y: 40),
+        GeoMarker(long: 2.294481, lat: 48.858370),
+        Marker(x: 250, y: 340),
+    ],
+),
+```
 
 ## Additional information
 
-Download maps on this website: (https://mapsvg.com/maps)[Maps]
+Download maps on this website: [Maps](https://mapsvg.com/maps)
 
 Some maps are missing and I haven't them yet. Feel free to open an issue if you have the SVG for a country or special subregion

@@ -105,7 +105,12 @@ class SvgParser {
     final xml = XmlDocument.parse(data);
 
     final svgElement = xml.getElement("svg");
-    final geoBox = svgElement!.getAttribute("mapsvg:geoViewBox")!.split(" ");
+    final geoBoxElement = svgElement!.getAttribute("mapsvg:geoViewBox");
+
+    // TODO: some maps doesn't have the geoviewbox
+    final geoBox = (geoBoxElement != null)
+        ? geoBoxElement.split(" ")
+        : ["0", "0", '0', "0"];
 
     final countryPaths =
         xml.findAllElements("path").map((e) => _getCountryPath(e)).toList();

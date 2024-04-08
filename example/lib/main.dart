@@ -14,7 +14,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String? selectedRegion;
-  MapEntity map = MapEntity.france;
+  MapEntity map = MapEntity.usaAllCounties;
   double _currentScale = 1.0;
 
   @override
@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
                   map: map,
                   selectedCode: selectedRegion,
                   minScale: 0.3,
-                  maxScale: 1.3,
+                  maxScale: 4,
                   initialScale: _currentScale,
                   currentScale: _currentScale,
                   markers: [
@@ -71,13 +71,6 @@ class _MyAppState extends State<MyApp> {
                         Marker(x: 30, y: 40),
                         Marker(x: 130, y: 440),
                         Marker(x: 250, y: 340),
-                      ],
-                    ),
-                    MarkerGroup(
-                      borderColor: Colors.blue.shade600,
-                      backgroundColor: Colors.blue.shade300,
-                      markers: [
-                        GeoMarker(long: 2.294481, lat: 48.858370),
                       ],
                     ),
                   ],
