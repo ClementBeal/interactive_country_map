@@ -96,7 +96,7 @@ class _MyAppState extends State<MyApp> {
                     }
                   });
                 },
-                child: Text("Zoom in"),
+                child: const Text("Zoom in"),
               ),
               FilledButton(
                 onPressed: () {
@@ -106,7 +106,7 @@ class _MyAppState extends State<MyApp> {
                     }
                   });
                 },
-                child: Text("Zoom out"),
+                child: const Text("Zoom out"),
               ),
             ],
           ),

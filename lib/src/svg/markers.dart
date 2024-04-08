@@ -23,8 +23,6 @@ class GeoMarker extends AMarker {
     // print("Lat: ${map.minLat} ${map.maxLat}");
     // print("Long: ${map.minLong} ${map.maxLong}");
 
-    double a = map.maxLat - map.minLat;
-
     return Offset(
       size.width / 360 * (180 + long),
       size.height / 180 * (90 - lat),

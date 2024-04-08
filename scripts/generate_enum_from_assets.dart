@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 
 import 'package:collection/collection.dart';
@@ -12,6 +14,6 @@ void main() {
       .sorted((a, b) => a.compareTo(b));
 
   for (var asset in assets) {
-    print("${asset.camelCase}(\"${asset}\"),");
+    print("${asset.camelCase}(\"$asset\"),");
   }
 }
