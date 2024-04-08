@@ -5,7 +5,7 @@ import 'package:interactive_country_map/src/interactive_map_theme.dart';
 import 'package:interactive_country_map/src/svg/svg_parser.dart';
 
 class MapPainter extends CustomPainter {
-  final List<CountryPath> countries;
+  final CountryMap countryMap;
   final Offset? cursorPosition;
   final InteractiveMapTheme theme;
   final String? selectedCode;
@@ -13,7 +13,7 @@ class MapPainter extends CustomPainter {
 
   MapPainter({
     super.repaint,
-    required this.countries,
+    required this.countryMap,
     required this.cursorPosition,
     required this.theme,
     required this.selectedCode,
@@ -43,8 +43,11 @@ class MapPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = theme.selectedBorderWidth;
 
-    for (var country in countries) {
-      final path = country.path.toPath();
+    for (var country in countryMap.countryPaths) {
+      final path = country.path.toPath(
+        maxSize: size,
+        originalMapSize: Size(countryMap.width, countryMap.height),
+      );
       paintFiller.color =
           theme.mappingCode?[country.countryCode] ?? theme.defaultCountryColor;
 

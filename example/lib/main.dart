@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:interactive_country_map/interactive_country_map.dart';
 
@@ -17,7 +15,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String? selectedRegion;
   MapEntity map = MapEntity.france;
-  double _currentScale = 0.8;
+  double _currentScale = 1.0;
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +59,7 @@ class _MyAppState extends State<MyApp> {
                   },
                   map: map,
                   selectedCode: selectedRegion,
-                  initialScale: 3.0,
+                  initialScale: 1.0,
                   currentScale: _currentScale,
                 ),
               ),

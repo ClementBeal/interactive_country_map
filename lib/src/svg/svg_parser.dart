@@ -1,5 +1,7 @@
+import 'dart:math';
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 
 class Point {
@@ -28,19 +30,13 @@ class SvgPath {
 
   SvgPath({required this.points});
 
-  Path toPath() {
+  Path toPath({Size? originalMapSize, Size? maxSize}) {
     final path = Path();
-    var hasAddedOffset = false;
-
     for (var point in points) {
       if (point is MovePoint) {
         // because the path is relative, we only add the offset to the first point
-        if (!hasAddedOffset) {
-          path.relativeMoveTo(point.x, point.y);
-          hasAddedOffset = true;
-        } else {
-          path.relativeMoveTo(point.x, point.y);
-        }
+        path.relativeMoveTo(point.x, point.y);
+
         for (var point in point.relativePoints) {
           path.relativeLineTo(point.x, point.y);
         }
@@ -52,6 +48,18 @@ class SvgPath {
         path.relativeLineTo(point.x, point.y);
       }
     }
+
+    if (maxSize != null && originalMapSize != null) {
+      double scaleX = maxSize.width / originalMapSize.width;
+      double scaleY = maxSize.height / originalMapSize.height;
+
+      // Choose the minimum scale factor to maintain the aspect ratio
+      double scale = scaleX < scaleY ? scaleX : scaleY;
+
+      final scaleMatrix = Matrix4.identity()..scale(scale, scale);
+      return path.transform(scaleMatrix.storage);
+    }
+
     return path;
   }
 }
@@ -63,11 +71,34 @@ class CountryPath {
   CountryPath({required this.countryCode, required this.path});
 }
 
+class CountryMap {
+  final List<CountryPath> countryPaths;
+  final double width;
+  final double height;
+
+  CountryMap({
+    required this.countryPaths,
+    required this.width,
+    required this.height,
+  });
+}
+
 class SvgParser {
-  Future<List<CountryPath>> parse(String data) async {
+  Future<CountryMap> parse(String data) async {
     final xml = XmlDocument.parse(data);
 
-    return xml.findAllElements("path").map((e) => _getCountryPath(e)).toList();
+    final svgElement = xml.getElement("svg");
+
+    final countryPaths =
+        xml.findAllElements("path").map((e) => _getCountryPath(e)).toList();
+
+    final countryMap = CountryMap(
+      countryPaths: countryPaths,
+      width: double.parse(svgElement!.getAttribute("width")!),
+      height: double.parse(svgElement.getAttribute("height")!),
+    );
+
+    return countryMap;
   }
 
   CountryPath _getCountryPath(XmlElement element) {

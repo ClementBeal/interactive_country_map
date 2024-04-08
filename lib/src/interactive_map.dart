@@ -127,7 +127,7 @@ class GeographicMap extends StatefulWidget {
 }
 
 class _GeographicMapState extends State<GeographicMap> {
-  List<CountryPath> countries = [];
+  CountryMap? countryMap;
   Offset? cursorPosition;
   Offset offset = Offset.zero;
 
@@ -161,7 +161,7 @@ class _GeographicMapState extends State<GeographicMap> {
     final newPaths = await SvgParser().parse(widget.svgData);
 
     setState(() {
-      countries = newPaths;
+      countryMap = newPaths;
     });
   }
 
@@ -175,7 +175,7 @@ class _GeographicMapState extends State<GeographicMap> {
         });
 
         // we crawl all the countries and just keep the first containing the cursor position
-        final selectedCountry = countries.firstWhereOrNull(
+        final selectedCountry = countryMap?.countryPaths.firstWhereOrNull(
             (element) => element.path.toPath().contains(details.localPosition));
 
         if (selectedCountry != null && widget.onCountrySelected != null) {
@@ -186,16 +186,21 @@ class _GeographicMapState extends State<GeographicMap> {
         }
       },
       child: LayoutBuilder(
-        builder: (context, constraints) => CustomPaint(
-          size: Size(constraints.maxWidth, constraints.maxHeight),
-          painter: MapPainter(
-            countries: countries,
-            cursorPosition: cursorPosition,
-            theme: widget.theme,
-            selectedCode: _selectedCode,
-            canSelect: widget.onCountrySelected != null,
-          ),
-        ),
+        builder: (context, constraints) {
+          if (countryMap == null) {
+            return const CircularProgressIndicator();
+          }
+          return CustomPaint(
+            size: Size(constraints.maxWidth, constraints.maxHeight),
+            painter: MapPainter(
+              countryMap: countryMap!,
+              cursorPosition: cursorPosition,
+              theme: widget.theme,
+              selectedCode: _selectedCode,
+              canSelect: widget.onCountrySelected != null,
+            ),
+          );
+        },
       ),
     );
   }
