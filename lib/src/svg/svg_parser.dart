@@ -130,7 +130,6 @@ class SvgParser {
 
   CountryPath _getCountryPath(XmlElement element) {
     final countryCode = element.getAttribute("id");
-    print(element);
 
     if (countryCode == null) {
       throw Exception();
