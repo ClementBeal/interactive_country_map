@@ -17,11 +17,16 @@ class ClosePoint extends Point {
 class MovePoint extends Point {
   final List<Point> relativePoints;
 
-  MovePoint(this.relativePoints, {required super.x, required super.y});
+  MovePoint(this.relativePoints,
+      {required super.x, required super.y, required this.isRelative});
+
+  final bool isRelative;
 }
 
 class LinePoint extends Point {
-  LinePoint({required super.x, required super.y});
+  LinePoint({required super.x, required super.y, required this.isRelative});
+
+  final bool isRelative;
 }
 
 class SvgPath {
@@ -34,17 +39,23 @@ class SvgPath {
     for (var point in points) {
       if (point is MovePoint) {
         // because the path is relative, we only add the offset to the first point
-        path.relativeMoveTo(point.x, point.y);
+        if (point.isRelative) {
+          path.relativeMoveTo(point.x, point.y);
+        } else {
+          path.moveTo(point.x, point.y);
+        }
 
         for (var point in point.relativePoints) {
           path.relativeLineTo(point.x, point.y);
         }
-      }
-      if (point is ClosePoint) {
+      } else if (point is ClosePoint) {
         path.close();
-      }
-      if (point is LinePoint) {
-        path.relativeLineTo(point.x, point.y);
+      } else if (point is LinePoint) {
+        if (point.isRelative) {
+          path.relativeLineTo(point.x, point.y);
+        } else {
+          path.lineTo(point.x, point.y);
+        }
       }
     }
 
@@ -121,7 +132,21 @@ class SvgParser {
       throw Exception();
     }
 
-    final path = element.getAttribute("d")!.split(" ");
+    final List<String> path;
+    final pathString = element.getAttribute("d")!;
+
+    if (pathString.contains(" ")) {
+      path = pathString.split(" ");
+    } else {
+      path = pathString
+          .replaceAllMapped(
+              RegExp(r"[a-zA-Z]"), (match) => " ${match.group(0)} ")
+          .trim()
+          .split(" ")
+          .where((element) => element.isNotEmpty)
+          .toList();
+    }
+
     final newSvgPath = SvgPath(points: []);
 
     for (var i = 0; i < path.length; i++) {
@@ -129,19 +154,18 @@ class SvgParser {
 
       // Path command to `moveRelativeTo`
       // The first point is the initial value and the following are relative to the previous one
-      if (token == "m") {
+      if (token == "m" || token == "M") {
         final firstCoordinates = path[++i].split(",");
         final movePoints = MovePoint(
           [],
           x: double.parse(firstCoordinates[0]),
           y: double.parse(firstCoordinates[1]),
+          isRelative: token == "m",
         );
 
-        i++;
-
-        while (i < path.length &&
-            !["m", "z", "l"].contains(path[i].toLowerCase())) {
-          final point = path[i++].split(",");
+        while (i + 1 < path.length &&
+            !["m", "z", "l", "v", "h"].contains(path[i + 1].toLowerCase())) {
+          final point = path[++i].split(",");
           final newPoint = Point(
             x: double.parse(point[0]),
             y: double.parse(point[1]),
@@ -153,12 +177,28 @@ class SvgParser {
         newSvgPath.points.add(movePoints);
       } else if (token == "z") {
         newSvgPath.points.add(ClosePoint());
-      } else if (token == "l") {
+      } else if (token == "l" || token == "L") {
         final coordinates = path[++i].split(",");
         newSvgPath.points.add(LinePoint(
           x: double.parse(coordinates[0]),
           y: double.parse(coordinates[1]),
+          isRelative: token == "l",
         ));
+      } else if (token == "v" || token == "V") {
+        final coordinates = path[++i];
+        newSvgPath.points.add(
+          LinePoint(
+              x: -1, y: double.parse(coordinates), isRelative: token == "v"),
+        );
+      } else if (token == "h" || token == "H") {
+        final coordinates = path[++i];
+        newSvgPath.points.add(LinePoint(
+            x: double.parse(coordinates), isRelative: token == "h", y: 0));
+      } else {
+        print(i);
+        print(token);
+        print(path.length);
+        throw Exception(path);
       }
     }
 

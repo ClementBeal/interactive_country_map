@@ -14,7 +14,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String? selectedRegion;
-  MapEntity map = MapEntity.france;
+  MapEntity map = MapEntity.argentina;
   double _currentScale = 1.0;
 
   @override
@@ -59,7 +59,7 @@ class _MyAppState extends State<MyApp> {
                   },
                   map: map,
                   selectedCode: selectedRegion,
-                  initialScale: 1.0,
+                  initialScale: _currentScale,
                   currentScale: _currentScale,
                   markers: [
                     MarkerGroup(
@@ -81,11 +81,11 @@ class _MyAppState extends State<MyApp> {
                   ],
                 ),
               ),
-              if (selectedRegion != null)
-                Text(
-                  "Selected area: $selectedRegion",
-                  style: Theme.of(context).textTheme.displaySmall,
-                ),
+              // if (selectedRegion != null)
+              //   Text(
+              //     "Selected area: $selectedRegion",
+              //     style: Theme.of(context).textTheme.displaySmall,
+              //   ),
               FilledButton(
                 onPressed: () {
                   setState(() {
