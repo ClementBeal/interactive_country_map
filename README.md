@@ -4,6 +4,12 @@ The purpose of this package is to draw an interactive map of a country or region
 
 It can be used to plot data.
 
+# How to install
+
+`flutter pub add interactive_country_map`
+
+Or go here: [pub.dev](https://pub.dev/packages/interactive_country_map/install)
+
 
 ## Demo
 
