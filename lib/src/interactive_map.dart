@@ -13,7 +13,7 @@ class InteractiveMap extends StatefulWidget {
     this.onCountrySelected,
     required this.map,
     this.theme = const InteractiveMapTheme(),
-    this.loadingWidget,
+    this.loadingBuilder,
     this.minScale = 0.5,
     this.currentScale,
     this.maxScale = 8,
@@ -36,7 +36,7 @@ class InteractiveMap extends StatefulWidget {
   final InteractiveMapTheme theme;
 
   /// Widget we display during the loading of the map
-  final Widget? loadingWidget;
+  final Widget Function(BuildContext context)? loadingBuilder;
 
   /// Minimum value of a scale. Must be greater than 0
   final double minScale;
@@ -111,7 +111,7 @@ class _InteractiveMapState extends State<InteractiveMap> {
         ),
       );
     } else {
-      return widget.loadingWidget ?? const SizedBox.shrink();
+      return widget.loadingBuilder?.call(context) ?? const SizedBox.shrink();
     }
   }
 }
