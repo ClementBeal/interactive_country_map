@@ -11,12 +11,12 @@ class InteractiveMap extends StatefulWidget {
     this.onCountrySelected,
     required this.map,
     this.theme = const InteractiveMapTheme(),
-    this.controller,
     this.loadingWidget,
     this.minZoom = 0.5,
-    this.initialZoom = 1.0,
+    this.currentScale,
     this.maxZoom = 12,
     this.selectedCode,
+    this.initialScale,
   }) : assert(minZoom > 0);
 
   /// Called when a country/region is selected. Return the code as defined by the ISO 3166-2
@@ -27,9 +27,6 @@ class InteractiveMap extends StatefulWidget {
   final MapEntity map;
   final InteractiveMapTheme theme;
 
-  /// Control the interactive map zoom
-  final InteractiveMapController? controller;
-
   /// Widget we display during the loading of the map
   final Widget? loadingWidget;
 
@@ -39,8 +36,11 @@ class InteractiveMap extends StatefulWidget {
   /// Maximum zoom value
   final double maxZoom;
 
+  /// Initial scale value
+  final double? initialScale;
+
   /// Initial value for the zoom
-  final double initialZoom;
+  final double? currentScale;
 
   /// Code of the selected country/region
   final String? selectedCode;
@@ -51,10 +51,14 @@ class InteractiveMap extends StatefulWidget {
 
 class _InteractiveMapState extends State<InteractiveMap> {
   String? svgData;
+  late final TransformationController _controller;
 
   @override
   void initState() {
     super.initState();
+
+    final scaleMatrix = Matrix4.identity()..scale(widget.initialScale ?? 1.0);
+    _controller = TransformationController(scaleMatrix);
 
     Future.delayed(Duration.zero, loadMap);
   }
@@ -65,6 +69,11 @@ class _InteractiveMapState extends State<InteractiveMap> {
 
     if (oldWidget.map.name != widget.map.name) {
       loadMap();
+    }
+
+    if (oldWidget.currentScale != widget.currentScale) {
+      final scaleMatrix = Matrix4.identity()..scale(widget.currentScale ?? 1.0);
+      _controller.value = scaleMatrix;
     }
   }
 
@@ -81,6 +90,7 @@ class _InteractiveMapState extends State<InteractiveMap> {
   Widget build(BuildContext context) {
     if (svgData != null) {
       return InteractiveViewer(
+        transformationController: _controller,
         minScale: widget.minZoom,
         maxScale: widget.maxZoom,
         panEnabled: true,
@@ -88,10 +98,6 @@ class _InteractiveMapState extends State<InteractiveMap> {
           svgData: svgData!,
           theme: widget.theme,
           onCountrySelected: widget.onCountrySelected,
-          minZoom: widget.minZoom,
-          maxZoom: widget.maxZoom,
-          initialZoom: widget.initialZoom,
-          controller: widget.controller,
           selectedCode: widget.selectedCode,
         ),
       );
@@ -107,21 +113,13 @@ class GeographicMap extends StatefulWidget {
     required this.svgData,
     required this.theme,
     this.onCountrySelected,
-    required this.minZoom,
-    required this.maxZoom,
-    this.controller,
-    required this.initialZoom,
     this.selectedCode,
   });
 
   final String svgData;
   final InteractiveMapTheme theme;
   final void Function(String code)? onCountrySelected;
-  final InteractiveMapController? controller;
 
-  final double minZoom;
-  final double maxZoom;
-  final double initialZoom;
   final String? selectedCode;
 
   @override
@@ -135,43 +133,11 @@ class _GeographicMapState extends State<GeographicMap> {
 
   String? _selectedCode;
 
-  double _scale = 1.0;
-
   @override
   void initState() {
     super.initState();
 
     _selectedCode = widget.selectedCode;
-
-    _scale = widget.initialZoom;
-
-    widget.controller?.addListener(() {
-      switch (widget.controller!.state) {
-        case InteractiveMapControllerState.none:
-          break;
-        case InteractiveMapControllerState.zoomIn:
-          setState(() {
-            if (_scale + widget.controller!.quantity <= widget.maxZoom) {
-              _scale += widget.controller!.quantity;
-            } else {
-              _scale = widget.maxZoom;
-            }
-          });
-
-        case InteractiveMapControllerState.zoomOut:
-          setState(() {
-            if (_scale - widget.controller!.quantity >= widget.minZoom) {
-              _scale -= widget.controller!.quantity;
-            } else {
-              _scale = widget.minZoom;
-            }
-          });
-        case InteractiveMapControllerState.reset:
-          setState(() {
-            _scale = widget.initialZoom;
-          });
-      }
-    });
 
     _parseSvg();
   }
@@ -232,39 +198,5 @@ class _GeographicMapState extends State<GeographicMap> {
         ),
       ),
     );
-  }
-}
-
-enum InteractiveMapControllerState { none, zoomIn, zoomOut, reset }
-
-class InteractiveMapController with ChangeNotifier {
-  double _quantity = 1.0;
-  get quantity => _quantity;
-
-  InteractiveMapControllerState state = InteractiveMapControllerState.none;
-
-  /// Zoom in in the map
-  /// @quantity : the amount of zoom to apply
-  void zoomIn({double quantity = 1.0}) {
-    _quantity = quantity;
-    state = InteractiveMapControllerState.zoomIn;
-
-    notifyListeners();
-  }
-
-  /// Zoom in in the map
-  /// @quantity : the amount of zoom to remove
-  void zoomOut({double quantity = 1.0}) {
-    _quantity = quantity;
-    state = InteractiveMapControllerState.zoomOut;
-
-    notifyListeners();
-  }
-
-  /// Reset the zoom at the initial value
-  void resetZoom() {
-    state = InteractiveMapControllerState.reset;
-
-    notifyListeners();
   }
 }
