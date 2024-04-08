@@ -242,10 +242,6 @@ class _GeographicMapState extends State<GeographicMap> {
           });
         },
         child: CustomPaint(
-          size: Size(
-            constraints.maxWidth,
-            constraints.maxHeight,
-          ),
           painter: MapPainter(
             countries: countries,
             cursorPosition: cursorPosition,
@@ -253,7 +249,7 @@ class _GeographicMapState extends State<GeographicMap> {
             theme: widget.theme,
             scale: _scale,
             selectedCode: _selectedCode,
-            canSelect: !_isZooming,
+            canSelect: !_isZooming && widget.onCountrySelected != null,
           ),
         ),
       ),
