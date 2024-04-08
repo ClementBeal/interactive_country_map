@@ -50,6 +50,7 @@ class _MyAppState extends State<MyApp> {
                   });
                 },
                 map: map,
+                selectedCode: "FR-U",
               ),
             ),
             if (selectedRegion != null)

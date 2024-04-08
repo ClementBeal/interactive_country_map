@@ -16,6 +16,7 @@ class InteractiveMap extends StatefulWidget {
     this.minZoom = 0.5,
     this.initialZoom = 1.0,
     this.maxZoom = 12,
+    this.selectedCode,
   }) : assert(minZoom > 0);
 
   /// Called when a country/region is selected. Return the code as defined by the ISO 3166-2
@@ -40,6 +41,9 @@ class InteractiveMap extends StatefulWidget {
 
   /// Initial value for the zoom
   final double initialZoom;
+
+  /// Code of the selected country/region
+  final String? selectedCode;
 
   @override
   State<InteractiveMap> createState() => _InteractiveMapState();
@@ -85,6 +89,7 @@ class _InteractiveMapState extends State<InteractiveMap> {
           maxZoom: widget.maxZoom,
           initialZoom: widget.initialZoom,
           controller: widget.controller,
+          selectedCode: widget.selectedCode,
         ),
       );
     } else {
@@ -103,6 +108,7 @@ class GeographicMap extends StatefulWidget {
     required this.maxZoom,
     this.controller,
     required this.initialZoom,
+    this.selectedCode,
   });
 
   final String svgData;
@@ -113,6 +119,7 @@ class GeographicMap extends StatefulWidget {
   final double minZoom;
   final double maxZoom;
   final double initialZoom;
+  final String? selectedCode;
 
   @override
   State<GeographicMap> createState() => _GeographicMapState();
@@ -123,12 +130,16 @@ class _GeographicMapState extends State<GeographicMap> {
   Offset? cursorPosition;
   Offset offset = Offset.zero;
 
+  String? _selectedCode;
+
   double _scale = 1.0;
   double _draggingScale = 1.0;
 
   @override
   void initState() {
     super.initState();
+
+    _selectedCode = widget.selectedCode;
 
     _scale = widget.initialZoom;
 
@@ -197,6 +208,9 @@ class _GeographicMapState extends State<GeographicMap> {
 
           if (selectedCountry != null) {
             widget.onCountrySelected(selectedCountry.countryCode);
+            setState(() {
+              _selectedCode = selectedCountry.countryCode;
+            });
           }
         },
         onScaleStart: (details) {
@@ -223,6 +237,7 @@ class _GeographicMapState extends State<GeographicMap> {
             offset: offset,
             theme: widget.theme,
             scale: _scale,
+            selectedCode: _selectedCode,
           ),
         ),
       ),

@@ -8,6 +8,7 @@ class MapPainter extends CustomPainter {
   final InteractiveMapTheme theme;
   final Offset offset;
   final double scale;
+  final String? selectedCode;
 
   MapPainter({
     super.repaint,
@@ -16,6 +17,7 @@ class MapPainter extends CustomPainter {
     required this.theme,
     required this.offset,
     required this.scale,
+    required this.selectedCode,
   });
 
   @override
@@ -46,7 +48,8 @@ class MapPainter extends CustomPainter {
       paintFiller.color =
           theme.mappingCode?[country.countryCode] ?? theme.defaultCountryColor;
 
-      if (cursorPosition != null && path.contains(cursorPosition!)) {
+      if (selectedCode == country.countryCode ||
+          (cursorPosition != null && path.contains(cursorPosition!))) {
         canvas.drawPath(path, selectedPaintFiller);
         canvas.drawPath(path, selectedPaintBorder);
       } else {
