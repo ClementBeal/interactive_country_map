@@ -14,13 +14,13 @@ class InteractiveMap extends StatefulWidget {
     required this.map,
     this.theme = const InteractiveMapTheme(),
     this.loadingWidget,
-    this.minZoom = 0.5,
+    this.minScale = 0.5,
     this.currentScale,
-    this.maxZoom = 12,
+    this.maxScale = 8,
     this.selectedCode,
     this.initialScale,
     this.markers = const [],
-  }) : assert(minZoom > 0);
+  }) : assert(minScale > 0);
 
   /// Called when a country/region is selected. Return the code as defined by the ISO 3166-2
   /// https://en.wikipedia.org/wiki/ISO_3166-2
@@ -38,11 +38,11 @@ class InteractiveMap extends StatefulWidget {
   /// Widget we display during the loading of the map
   final Widget? loadingWidget;
 
-  /// Minimum value of a zoom. Must be greater than 0
-  final double minZoom;
+  /// Minimum value of a scale. Must be greater than 0
+  final double minScale;
 
-  /// Maximum zoom value
-  final double maxZoom;
+  /// Maximum scale value
+  final double maxScale;
 
   /// Initial scale value
   final double? initialScale;
@@ -99,8 +99,8 @@ class _InteractiveMapState extends State<InteractiveMap> {
     if (svgData != null) {
       return InteractiveViewer(
         transformationController: _controller,
-        minScale: widget.minZoom,
-        maxScale: widget.maxZoom,
+        minScale: widget.minScale,
+        maxScale: widget.maxScale,
         panEnabled: true,
         child: GeographicMap(
           svgData: svgData!,

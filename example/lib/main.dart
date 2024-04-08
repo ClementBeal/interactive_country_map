@@ -59,7 +59,8 @@ class _MyAppState extends State<MyApp> {
                   },
                   map: map,
                   selectedCode: selectedRegion,
-                  minZoom: 0.2,
+                  minScale: 0.3,
+                  maxScale: 1.3,
                   initialScale: _currentScale,
                   currentScale: _currentScale,
                   markers: [
@@ -82,11 +83,11 @@ class _MyAppState extends State<MyApp> {
                   ],
                 ),
               ),
-              if (selectedRegion != null)
-                Text(
-                  "Selected area: $selectedRegion",
-                  style: Theme.of(context).textTheme.displaySmall,
-                ),
+              // if (selectedRegion != null)
+              //   Text(
+              //     "Selected area: $selectedRegion",
+              //     style: Theme.of(context).textTheme.displaySmall,
+              //   ),
               FilledButton(
                 onPressed: () {
                   setState(() {
