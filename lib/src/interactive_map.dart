@@ -177,45 +177,53 @@ class _GeographicMapState extends State<GeographicMap> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapUp: (details) {
-        setState(() {
-          // we need the cursor local position to detect if the cursor is inside a region or not
-          cursorPosition = details.localPosition;
-        });
-
-        // we crawl all the countries and just keep the first containing the cursor position
-        final selectedCountry = countryMap?.countryPaths.firstWhereOrNull(
-            (element) => element.path.toPath().contains(details.localPosition));
-
-        if (selectedCountry != null && widget.onCountrySelected != null) {
-          widget.onCountrySelected!(selectedCountry.countryCode);
+    return LayoutBuilder(
+      builder: (context, constraints) => GestureDetector(
+        onTapUp: (details) {
           setState(() {
-            _selectedCode = selectedCountry.countryCode;
+            // we need the cursor local position to detect if the cursor is inside a region or not
+            cursorPosition = details.localPosition;
           });
-        }
-      },
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          if (countryMap == null) {
-            return const CircularProgressIndicator();
+
+          // we crawl all the countries and just keep the first containing the cursor position
+          final selectedCountry = countryMap?.countryPaths
+              .firstWhereOrNull((element) => element.path
+                  .toPath(
+                    maxSize: Size(constraints.maxWidth, constraints.maxHeight),
+                    originalMapSize:
+                        Size(countryMap!.width, countryMap!.height),
+                  )
+                  .contains(details.localPosition));
+
+          if (selectedCountry != null && widget.onCountrySelected != null) {
+            widget.onCountrySelected!(selectedCountry.countryCode);
+            setState(() {
+              _selectedCode = selectedCountry.countryCode;
+            });
           }
-          return CustomPaint(
-            size: Size(constraints.maxWidth, constraints.maxHeight),
-            painter: MapPainter(
-              countryMap: countryMap!,
-              cursorPosition: cursorPosition,
-              theme: widget.theme,
-              selectedCode: _selectedCode,
-              canSelect: widget.onCountrySelected != null,
-            ),
-            foregroundPainter: MarkerPainter(
-              countryMap: countryMap!,
-              theme: widget.theme,
-              markers: widget.markers,
-            ),
-          );
         },
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            if (countryMap == null) {
+              return const CircularProgressIndicator();
+            }
+            return CustomPaint(
+              size: Size(constraints.maxWidth, constraints.maxHeight),
+              painter: MapPainter(
+                countryMap: countryMap!,
+                cursorPosition: cursorPosition,
+                theme: widget.theme,
+                selectedCode: _selectedCode,
+                canSelect: widget.onCountrySelected != null,
+              ),
+              foregroundPainter: MarkerPainter(
+                countryMap: countryMap!,
+                theme: widget.theme,
+                markers: widget.markers,
+              ),
+            );
+          },
+        ),
       ),
     );
   }

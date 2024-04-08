@@ -195,10 +195,7 @@ class SvgParser {
         newSvgPath.points.add(LinePoint(
             x: double.parse(coordinates), isRelative: token == "h", y: 0));
       } else {
-        print(i);
-        print(token);
-        print(path.length);
-        throw Exception(path);
+        throw Exception("Cannot parse this path. Unknown token $token");
       }
     }
 
