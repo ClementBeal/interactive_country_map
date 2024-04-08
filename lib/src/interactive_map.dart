@@ -80,15 +80,20 @@ class _InteractiveMapState extends State<InteractiveMap> {
   @override
   Widget build(BuildContext context) {
     if (svgData != null) {
-      return GeographicMap(
-        svgData: svgData!,
-        theme: widget.theme,
-        onCountrySelected: widget.onCountrySelected,
-        minZoom: widget.minZoom,
-        maxZoom: widget.maxZoom,
-        initialZoom: widget.initialZoom,
-        controller: widget.controller,
-        selectedCode: widget.selectedCode,
+      return InteractiveViewer(
+        minScale: widget.minZoom,
+        maxScale: widget.maxZoom,
+        panEnabled: true,
+        child: GeographicMap(
+          svgData: svgData!,
+          theme: widget.theme,
+          onCountrySelected: widget.onCountrySelected,
+          minZoom: widget.minZoom,
+          maxZoom: widget.maxZoom,
+          initialZoom: widget.initialZoom,
+          controller: widget.controller,
+          selectedCode: widget.selectedCode,
+        ),
       );
     } else {
       return widget.loadingWidget ?? const SizedBox.shrink();
@@ -131,8 +136,6 @@ class _GeographicMapState extends State<GeographicMap> {
   String? _selectedCode;
 
   double _scale = 1.0;
-  double _draggingScale = 1.0;
-  bool _isZooming = false;
 
   @override
   void initState() {
@@ -198,58 +201,33 @@ class _GeographicMapState extends State<GeographicMap> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) => GestureDetector(
-        onTapUp: (details) {
-          setState(() {
-            // we need the cursor local position to detect if the cursor is inside a region or not
-            cursorPosition = details.localPosition;
-          });
+    return GestureDetector(
+      onTapUp: (details) {
+        setState(() {
+          // we need the cursor local position to detect if the cursor is inside a region or not
+          cursorPosition = details.localPosition;
+        });
 
-          // we crawl all the countries and just keep the first containing the cursor position
-          final selectedCountry = countries.firstWhereOrNull((element) =>
-              element.path.toPath(1, offset).contains(details.localPosition));
+        // we crawl all the countries and just keep the first containing the cursor position
+        final selectedCountry = countries.firstWhereOrNull(
+            (element) => element.path.toPath().contains(details.localPosition));
 
-          if (selectedCountry != null && widget.onCountrySelected != null) {
-            widget.onCountrySelected!(selectedCountry.countryCode);
-            setState(() {
-              _selectedCode = selectedCountry.countryCode;
-            });
-          }
-        },
-        onScaleStart: (details) {
-          // we need to store the current zoom value because the new value multiply it
-          _draggingScale = _scale;
+        if (selectedCountry != null && widget.onCountrySelected != null) {
+          widget.onCountrySelected!(selectedCountry.countryCode);
           setState(() {
-            _isZooming = true;
+            _selectedCode = selectedCountry.countryCode;
           });
-        },
-        onScaleEnd: (details) {
-          setState(() {
-            _isZooming = false;
-          });
-        },
-        onScaleUpdate: (details) {
-          setState(() {
-            offset = offset + details.focalPointDelta;
-            cursorPosition = details.localFocalPoint;
-
-            final possibleNewScale = _draggingScale * details.scale;
-            if (widget.minZoom <= possibleNewScale &&
-                possibleNewScale <= widget.maxZoom) {
-              _scale = _draggingScale * details.scale;
-            }
-          });
-        },
-        child: CustomPaint(
+        }
+      },
+      child: LayoutBuilder(
+        builder: (context, constraints) => CustomPaint(
+          size: Size(constraints.maxWidth, constraints.maxHeight),
           painter: MapPainter(
             countries: countries,
             cursorPosition: cursorPosition,
-            offset: offset,
             theme: widget.theme,
-            scale: _scale,
             selectedCode: _selectedCode,
-            canSelect: !_isZooming && widget.onCountrySelected != null,
+            canSelect: widget.onCountrySelected != null,
           ),
         ),
       ),

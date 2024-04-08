@@ -55,11 +55,11 @@ class _MyAppState extends State<MyApp> {
                   width: 100,
                   height: 100,
                 ),
-                // onCountrySelected: (code) {
-                //   setState(() {
-                //     selectedRegion = code;
-                //   });
-                // },
+                onCountrySelected: (code) {
+                  setState(() {
+                    selectedRegion = code;
+                  });
+                },
                 map: map,
                 selectedCode: selectedRegion,
               ),

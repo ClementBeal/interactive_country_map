@@ -8,8 +8,6 @@ class MapPainter extends CustomPainter {
   final List<CountryPath> countries;
   final Offset? cursorPosition;
   final InteractiveMapTheme theme;
-  final Offset offset;
-  final double scale;
   final String? selectedCode;
   final bool canSelect;
 
@@ -18,8 +16,6 @@ class MapPainter extends CustomPainter {
     required this.countries,
     required this.cursorPosition,
     required this.theme,
-    required this.offset,
-    required this.scale,
     required this.selectedCode,
     required this.canSelect,
   });
@@ -48,7 +44,7 @@ class MapPainter extends CustomPainter {
       ..strokeWidth = theme.selectedBorderWidth;
 
     for (var country in countries) {
-      final path = country.path.toPath(scale, offset);
+      final path = country.path.toPath();
       paintFiller.color =
           theme.mappingCode?[country.countryCode] ?? theme.defaultCountryColor;
 

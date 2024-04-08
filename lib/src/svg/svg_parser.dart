@@ -28,7 +28,7 @@ class SvgPath {
 
   SvgPath({required this.points});
 
-  Path toPath(double scale, Offset offset) {
+  Path toPath() {
     final path = Path();
     var hasAddedOffset = false;
 
@@ -36,14 +36,13 @@ class SvgPath {
       if (point is MovePoint) {
         // because the path is relative, we only add the offset to the first point
         if (!hasAddedOffset) {
-          path.relativeMoveTo(
-              offset.dx + (point.x) * scale, offset.dy + (point.y) * scale);
+          path.relativeMoveTo(point.x, point.y);
           hasAddedOffset = true;
         } else {
-          path.relativeMoveTo((point.x) * scale, (point.y) * scale);
+          path.relativeMoveTo(point.x, point.y);
         }
         for (var point in point.relativePoints) {
-          path.relativeLineTo((point.x) * scale, (point.y) * scale);
+          path.relativeLineTo(point.x, point.y);
         }
       }
       if (point is ClosePoint) {
