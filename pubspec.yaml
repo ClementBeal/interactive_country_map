@@ -1,7 +1,21 @@
 name: interactive_country_map
 description: "Add interactive map to your app and select any regions with a tap!"
 version: 0.0.1
-homepage:
+homepage: https://clementbeal.github.io/
+repository: https://github.com/ClementBeal/interactive_country_map
+issue_tracker: https://github.com/ClementBeal/interactive_country_map/issues
+
+screenshots:
+  - description: "Selection of a region of France to define the birthplace"
+    path: docs/france_department.gif
+  - description: "Repartition of some amimals in france"
+    path: docs/france_animals.png
+
+topics:
+  - ui
+  - map
+  - chart
+  - plot
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
