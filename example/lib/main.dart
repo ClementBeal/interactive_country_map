@@ -14,7 +14,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String? selectedRegion;
-  MapEntity map = MapEntity.usaAllCounties;
+  MapEntity map = MapEntity.franceNew;
   double _currentScale = 1.0;
 
   @override
@@ -63,17 +63,17 @@ class _MyAppState extends State<MyApp> {
                   maxScale: 4,
                   initialScale: _currentScale,
                   currentScale: _currentScale,
-                  markers: [
-                    MarkerGroup(
-                      borderColor: Colors.pink.shade600,
-                      backgroundColor: Colors.pink.shade300,
-                      markers: [
-                        Marker(x: 30, y: 40),
-                        Marker(x: 130, y: 440),
-                        Marker(x: 250, y: 340),
-                      ],
-                    ),
-                  ],
+                  // markers: [
+                  //   MarkerGroup(
+                  //     borderColor: Colors.pink.shade600,
+                  //     backgroundColor: Colors.pink.shade300,
+                  //     markers: [
+                  //       Marker(x: 30, y: 40),
+                  //       Marker(x: 130, y: 440),
+                  //       Marker(x: 250, y: 340),
+                  //     ],
+                  //   ),
+                  // ],
                 ),
               ),
               // if (selectedRegion != null)
@@ -81,26 +81,26 @@ class _MyAppState extends State<MyApp> {
               //     "Selected area: $selectedRegion",
               //     style: Theme.of(context).textTheme.displaySmall,
               //   ),
-              FilledButton(
-                onPressed: () {
-                  setState(() {
-                    if (_currentScale <= 8) {
-                      _currentScale += 1;
-                    }
-                  });
-                },
-                child: const Text("Zoom in"),
-              ),
-              FilledButton(
-                onPressed: () {
-                  setState(() {
-                    if (_currentScale - 1 > 0) {
-                      _currentScale -= 1;
-                    }
-                  });
-                },
-                child: const Text("Zoom out"),
-              ),
+              // FilledButton(
+              //   onPressed: () {
+              //     setState(() {
+              //       if (_currentScale <= 8) {
+              //         _currentScale += 1;
+              //       }
+              //     });
+              //   },
+              //   child: const Text("Zoom in"),
+              // ),
+              // FilledButton(
+              //   onPressed: () {
+              //     setState(() {
+              //       if (_currentScale - 1 > 0) {
+              //         _currentScale -= 1;
+              //       }
+              //     });
+              //   },
+              //   child: const Text("Zoom out"),
+              // ),
             ],
           ),
         ),

@@ -1,30 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
 
-class Point {
-  final double x;
-  final double y;
+sealed class Point {
+  final bool isRelative;
 
-  Point({required this.x, required this.y});
+  Point({required this.isRelative});
 }
 
 class ClosePoint extends Point {
-  ClosePoint() : super(x: 0, y: 0);
+  ClosePoint({required super.isRelative});
+}
+
+class RelativePoint {
+  final double x;
+  final double y;
+
+  RelativePoint({required this.x, required this.y});
 }
 
 class MovePoint extends Point {
-  final List<Point> relativePoints;
+  final List<RelativePoint> relativePoints;
+
+  final double x;
+  final double y;
 
   MovePoint(this.relativePoints,
-      {required super.x, required super.y, required this.isRelative});
-
-  final bool isRelative;
+      {required this.x, required this.y, required super.isRelative});
 }
 
 class LinePoint extends Point {
-  LinePoint({required super.x, required super.y, required this.isRelative});
+  LinePoint(this.relativePoints,
+      {required this.x, required this.y, required super.isRelative});
 
-  final bool isRelative;
+  final double x;
+  final double y;
+  final List<RelativePoint> relativePoints;
+}
+
+class CurvePoint extends Point {
+  CurvePoint(
+      {required this.a,
+      required this.b,
+      required this.c,
+      required super.isRelative});
+
+  final RelativePoint a;
+  final RelativePoint b;
+  final RelativePoint c;
 }
 
 class SvgPath {
@@ -35,25 +57,37 @@ class SvgPath {
   Path toPath({Size? originalMapSize, Size? maxSize}) {
     final path = Path();
     for (var point in points) {
-      if (point is MovePoint) {
-        // because the path is relative, we only add the offset to the first point
-        if (point.isRelative) {
-          path.relativeMoveTo(point.x, point.y);
-        } else {
-          path.moveTo(point.x, point.y);
-        }
+      switch (point) {
+        case ClosePoint m:
+          path.close();
 
-        for (var point in point.relativePoints) {
-          path.relativeLineTo(point.x, point.y);
-        }
-      } else if (point is ClosePoint) {
-        path.close();
-      } else if (point is LinePoint) {
-        if (point.isRelative) {
-          path.relativeLineTo(point.x, point.y);
-        } else {
-          path.lineTo(point.x, point.y);
-        }
+        case MovePoint point:
+          // because the path is relative, we only add the offset to the first point
+          if (point.isRelative) {
+            path.relativeMoveTo(point.x, point.y);
+          } else {
+            path.moveTo(point.x, point.y);
+          }
+
+          for (var relativePoint in point.relativePoints) {
+            path.relativeLineTo(relativePoint.x, relativePoint.y);
+          }
+          break;
+        case LinePoint point:
+          if (point.isRelative) {
+            path.relativeLineTo(point.x, point.y);
+          } else {
+            path.lineTo(point.x, point.y);
+          }
+        case CurvePoint point:
+          if (point.isRelative) {
+            path.relativeCubicTo(point.a.x, point.a.y, point.b.x, point.b.y,
+                point.c.x, point.c.y);
+          } else {
+            path.cubicTo(point.a.x, point.a.y, point.b.x, point.b.y, point.c.x,
+                point.c.y);
+          }
+          break;
       }
     }
 
@@ -139,7 +173,7 @@ class SvgParser {
     final pathString = element.getAttribute("d")!;
 
     path = pathString
-        .replaceAllMapped(RegExp(r"(\S)?([mlhvzMLHVZ])"), (match) {
+        .replaceAllMapped(RegExp(r"(\S)?([mlhvzcMLHVZC])"), (match) {
           if (match.group(1) != null) {
             return "${match.group(1)} ${match.group(2)} ";
           }
@@ -167,9 +201,10 @@ class SvgParser {
         );
 
         while (i + 1 < path.length &&
-            !["m", "z", "l", "v", "h"].contains(path[i + 1].toLowerCase())) {
+            !["m", "z", "l", "v", "h", "c"]
+                .contains(path[i + 1].toLowerCase())) {
           final point = path[++i].split(",");
-          final newPoint = Point(
+          final newPoint = RelativePoint(
             x: double.parse(point[0]),
             y: double.parse(point[1]),
           );
@@ -179,25 +214,76 @@ class SvgParser {
 
         newSvgPath.points.add(movePoints);
       } else if (token == "z") {
-        newSvgPath.points.add(ClosePoint());
+        newSvgPath.points.add(ClosePoint(isRelative: false));
       } else if (token == "l" || token == "L") {
         final coordinates = path[++i].split(",");
-        newSvgPath.points.add(LinePoint(
+        final newLinePoint = LinePoint(
+          [],
           x: double.parse(coordinates[0]),
           y: double.parse(coordinates[1]),
           isRelative: token == "l",
-        ));
+        );
+
+        while (i + 1 < path.length &&
+            !["m", "z", "l", "v", "h", "c"]
+                .contains(path[i + 1].toLowerCase())) {
+          final point = path[++i].split(",");
+          final newPoint = RelativePoint(
+            x: double.parse(point[0]),
+            y: double.parse(point[1]),
+          );
+          newLinePoint.relativePoints.add(newPoint);
+        }
+
+        newSvgPath.points.add(newLinePoint);
       } else if (token == "v" || token == "V") {
         final coordinates = path[++i];
-        newSvgPath.points.add(
-          LinePoint(
-              x: -1, y: double.parse(coordinates), isRelative: token == "v"),
-        );
+
+        final newLinePoint = LinePoint([],
+            x: -1, y: double.parse(coordinates), isRelative: token == "v");
+
+        while (i + 1 < path.length &&
+            !["m", "z", "l", "v", "h", "c"]
+                .contains(path[i + 1].toLowerCase())) {
+          final point = path[++i].split(",");
+          final newPoint = RelativePoint(
+            x: double.parse(point[0]),
+            y: double.parse(point[1]),
+          );
+          newLinePoint.relativePoints.add(newPoint);
+        }
+
+        newSvgPath.points.add(newLinePoint);
       } else if (token == "h" || token == "H") {
         final coordinates = path[++i];
-        newSvgPath.points.add(LinePoint(
+        newSvgPath.points.add(LinePoint([],
             x: double.parse(coordinates), isRelative: token == "h", y: 0));
+      } else if (token == "c" || token == "C") {
+        final point1 = path[i + 1].split(",");
+        final point2 = path[i + 2].split(",");
+        final point3 = path[i + 3].split(",");
+
+        i += 3;
+
+        newSvgPath.points.add(
+          CurvePoint(
+            a: RelativePoint(
+              x: double.parse(point1[0]),
+              y: double.parse(point1[1]),
+            ),
+            b: RelativePoint(
+              x: double.parse(point2[0]),
+              y: double.parse(point2[1]),
+            ),
+            c: RelativePoint(
+              x: double.parse(point3[0]),
+              y: double.parse(point3[1]),
+            ),
+            isRelative: token == "c",
+          ),
+        );
       } else {
+        print(path);
         throw Exception("Cannot parse this path. Unknown token $token");
       }
     }
