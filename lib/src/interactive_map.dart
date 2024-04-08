@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:interactive_country_map/src/interactive_map_theme.dart';
 import 'package:interactive_country_map/src/map_entity.dart';
-import 'package:interactive_country_map/src/map_painter.dart';
+import 'package:interactive_country_map/src/painters/map_painter.dart';
 import 'package:interactive_country_map/src/painters/marker_painter.dart';
 import 'package:interactive_country_map/src/svg/markers.dart';
 import 'package:interactive_country_map/src/svg/svg_parser.dart';
