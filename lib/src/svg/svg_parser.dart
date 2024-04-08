@@ -58,7 +58,7 @@ class SvgPath {
     final path = Path();
     for (var point in points) {
       switch (point) {
-        case ClosePoint m:
+        case ClosePoint():
           path.close();
 
         case MovePoint point:
@@ -283,7 +283,6 @@ class SvgParser {
           ),
         );
       } else {
-        print(path);
         throw Exception("Cannot parse this path. Unknown token $token");
       }
     }

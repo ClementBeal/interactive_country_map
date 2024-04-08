@@ -15,7 +15,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return const SafeArea(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
@@ -26,7 +26,7 @@ class _MyAppState extends State<MyApp> {
 }
 
 class FranceDepartmentsPage extends StatefulWidget {
-  FranceDepartmentsPage({super.key});
+  const FranceDepartmentsPage({super.key});
 
   @override
   State<FranceDepartmentsPage> createState() => _FranceDepartmentsPageState();
@@ -78,7 +78,7 @@ class _FranceDepartmentsPageState extends State<FranceDepartmentsPage> {
               onTap: () async {
                 final value = await showModalBottomSheet<String>(
                   context: context,
-                  builder: (context) => FrenchDepartementsList(),
+                  builder: (context) => const FrenchDepartementsList(),
                 );
 
                 if (value != null) {
@@ -97,7 +97,7 @@ class _FranceDepartmentsPageState extends State<FranceDepartmentsPage> {
 }
 
 class FrenchDepartementsList extends StatelessWidget {
-  FrenchDepartementsList({super.key});
+  const FrenchDepartementsList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -173,13 +173,13 @@ class FranceWolfMap extends StatelessWidget {
                   leading: CircleAvatar(
                     backgroundColor: Colors.blue.shade300,
                   ),
-                  title: Text("Bears"),
+                  title: const Text("Bears"),
                 ),
                 ListTile(
                   leading: CircleAvatar(
                     backgroundColor: Colors.red.shade200,
                   ),
-                  title: Text("Wolves"),
+                  title: const Text("Wolves"),
                 ),
               ],
             ),

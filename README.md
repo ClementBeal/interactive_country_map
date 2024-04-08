@@ -9,7 +9,7 @@ It can be used to plot data.
 
 | Interaction | Chart  |
 |--|--------------|
-| ![](doc/france_department.webm) | ![](doc/a.gif) |
+| ![](doc/france_department.gif) | ![](doc/france_animals.png) |
 
 ## How does it work?
 
