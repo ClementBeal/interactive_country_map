@@ -7,9 +7,9 @@ issue_tracker: https://github.com/ClementBeal/interactive_country_map/issues
 
 screenshots:
   - description: "Selection of a region of France to define the birthplace"
-    path: docs/france_department.gif
+    path: doc/france_department.gif
   - description: "Repartition of some amimals in france"
-    path: docs/france_animals.png
+    path: doc/france_animals.png
 
 topics:
   - ui
