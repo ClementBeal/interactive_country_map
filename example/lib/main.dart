@@ -61,6 +61,16 @@ class _MyAppState extends State<MyApp> {
                   selectedCode: selectedRegion,
                   initialScale: 1.0,
                   currentScale: _currentScale,
+                  markers: [
+                    MarkerGroup(
+                      color: Colors.pink.shade300,
+                      markers: [
+                        Marker(x: 30, y: 40),
+                        Marker(x: 130, y: 440),
+                        Marker(x: 250, y: 340),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               if (selectedRegion != null)

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:interactive_country_map/src/interactive_map_theme.dart';
 import 'package:interactive_country_map/src/map_entity.dart';
 import 'package:interactive_country_map/src/map_painter.dart';
+import 'package:interactive_country_map/src/painters/marker_painter.dart';
+import 'package:interactive_country_map/src/svg/markers.dart';
 import 'package:interactive_country_map/src/svg/svg_parser.dart';
 
 class InteractiveMap extends StatefulWidget {
@@ -17,14 +19,20 @@ class InteractiveMap extends StatefulWidget {
     this.maxZoom = 12,
     this.selectedCode,
     this.initialScale,
+    this.markers = const [],
   }) : assert(minZoom > 0);
 
   /// Called when a country/region is selected. Return the code as defined by the ISO 3166-2
   /// https://en.wikipedia.org/wiki/ISO_3166-2
   final void Function(String code)? onCountrySelected;
 
+  ///
+  final List<MarkerGroup> markers;
+
   /// The name of the map to use (USA, China, France...)
   final MapEntity map;
+
+  // Theme
   final InteractiveMapTheme theme;
 
   /// Widget we display during the loading of the map
@@ -99,6 +107,7 @@ class _InteractiveMapState extends State<InteractiveMap> {
           theme: widget.theme,
           onCountrySelected: widget.onCountrySelected,
           selectedCode: widget.selectedCode,
+          markers: widget.markers,
         ),
       );
     } else {
@@ -114,11 +123,13 @@ class GeographicMap extends StatefulWidget {
     required this.theme,
     this.onCountrySelected,
     this.selectedCode,
+    required this.markers,
   });
 
   final String svgData;
   final InteractiveMapTheme theme;
   final void Function(String code)? onCountrySelected;
+  final List<MarkerGroup> markers;
 
   final String? selectedCode;
 
@@ -129,7 +140,6 @@ class GeographicMap extends StatefulWidget {
 class _GeographicMapState extends State<GeographicMap> {
   CountryMap? countryMap;
   Offset? cursorPosition;
-  Offset offset = Offset.zero;
 
   String? _selectedCode;
 
@@ -198,6 +208,11 @@ class _GeographicMapState extends State<GeographicMap> {
               theme: widget.theme,
               selectedCode: _selectedCode,
               canSelect: widget.onCountrySelected != null,
+            ),
+            foregroundPainter: MarkerPainter(
+              countryMap: countryMap!,
+              theme: widget.theme,
+              markers: widget.markers,
             ),
           );
         },
