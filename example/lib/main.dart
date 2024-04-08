@@ -16,6 +16,8 @@ class _MyAppState extends State<MyApp> {
   String? selectedRegion;
   MapEntity map = MapEntity.france;
 
+  InteractiveMapController controller = InteractiveMapController();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -26,6 +28,7 @@ class _MyAppState extends State<MyApp> {
           children: [
             Expanded(
               child: InteractiveMap(
+                controller: controller,
                 theme: InteractiveMapTheme(
                   borderColor: Colors.red.shade200,
                   borderWidth: 2.0,
@@ -54,6 +57,18 @@ class _MyAppState extends State<MyApp> {
                 "Selected area: $selectedRegion",
                 style: Theme.of(context).textTheme.displaySmall,
               ),
+            FilledButton(
+              onPressed: () {
+                controller.zoomIn();
+              },
+              child: Text("Zoom in"),
+            ),
+            FilledButton(
+              onPressed: () {
+                controller.zoomOut();
+              },
+              child: Text("Zoom out"),
+            ),
           ],
         ),
       ),

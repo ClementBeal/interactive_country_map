@@ -84,6 +84,8 @@ class SvgParser {
     for (var i = 0; i < path.length; i++) {
       final token = path[i];
 
+      // Path command to `moveRelativeTo`
+      // The first point is the initial value and the following are relative to the previous one
       if (token == "m") {
         final firstCoordinates = path[++i].split(",");
         final movePoints = MovePoint(
