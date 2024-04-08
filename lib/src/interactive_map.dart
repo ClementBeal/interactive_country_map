@@ -8,7 +8,7 @@ import 'package:interactive_country_map/src/svg/svg_parser.dart';
 class InteractiveMap extends StatefulWidget {
   const InteractiveMap({
     super.key,
-    required this.onCountrySelected,
+    this.onCountrySelected,
     required this.map,
     this.theme = const InteractiveMapTheme(),
     this.controller,
@@ -21,7 +21,7 @@ class InteractiveMap extends StatefulWidget {
 
   /// Called when a country/region is selected. Return the code as defined by the ISO 3166-2
   /// https://en.wikipedia.org/wiki/ISO_3166-2
-  final void Function(String code) onCountrySelected;
+  final void Function(String code)? onCountrySelected;
 
   /// The name of the map to use (USA, China, France...)
   final MapEntity map;
@@ -80,17 +80,15 @@ class _InteractiveMapState extends State<InteractiveMap> {
   @override
   Widget build(BuildContext context) {
     if (svgData != null) {
-      return Center(
-        child: GeographicMap(
-          svgData: svgData!,
-          theme: widget.theme,
-          onCountrySelected: widget.onCountrySelected,
-          minZoom: widget.minZoom,
-          maxZoom: widget.maxZoom,
-          initialZoom: widget.initialZoom,
-          controller: widget.controller,
-          selectedCode: widget.selectedCode,
-        ),
+      return GeographicMap(
+        svgData: svgData!,
+        theme: widget.theme,
+        onCountrySelected: widget.onCountrySelected,
+        minZoom: widget.minZoom,
+        maxZoom: widget.maxZoom,
+        initialZoom: widget.initialZoom,
+        controller: widget.controller,
+        selectedCode: widget.selectedCode,
       );
     } else {
       return widget.loadingWidget ?? const SizedBox.shrink();
@@ -103,7 +101,7 @@ class GeographicMap extends StatefulWidget {
     super.key,
     required this.svgData,
     required this.theme,
-    required this.onCountrySelected,
+    this.onCountrySelected,
     required this.minZoom,
     required this.maxZoom,
     this.controller,
@@ -113,7 +111,7 @@ class GeographicMap extends StatefulWidget {
 
   final String svgData;
   final InteractiveMapTheme theme;
-  final void Function(String code) onCountrySelected;
+  final void Function(String code)? onCountrySelected;
   final InteractiveMapController? controller;
 
   final double minZoom;
@@ -134,6 +132,7 @@ class _GeographicMapState extends State<GeographicMap> {
 
   double _scale = 1.0;
   double _draggingScale = 1.0;
+  bool _isZooming = false;
 
   @override
   void initState() {
@@ -182,6 +181,11 @@ class _GeographicMapState extends State<GeographicMap> {
     if (oldWidget.svgData != widget.svgData) {
       _parseSvg();
     }
+    if (oldWidget.selectedCode != widget.selectedCode) {
+      setState(() {
+        _selectedCode = widget.selectedCode;
+      });
+    }
   }
 
   Future<void> _parseSvg() async {
@@ -196,7 +200,7 @@ class _GeographicMapState extends State<GeographicMap> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) => GestureDetector(
-        onTapDown: (details) {
+        onTapUp: (details) {
           setState(() {
             // we need the cursor local position to detect if the cursor is inside a region or not
             cursorPosition = details.localPosition;
@@ -206,8 +210,8 @@ class _GeographicMapState extends State<GeographicMap> {
           final selectedCountry = countries.firstWhereOrNull((element) =>
               element.path.toPath(1, offset).contains(details.localPosition));
 
-          if (selectedCountry != null) {
-            widget.onCountrySelected(selectedCountry.countryCode);
+          if (selectedCountry != null && widget.onCountrySelected != null) {
+            widget.onCountrySelected!(selectedCountry.countryCode);
             setState(() {
               _selectedCode = selectedCountry.countryCode;
             });
@@ -216,6 +220,14 @@ class _GeographicMapState extends State<GeographicMap> {
         onScaleStart: (details) {
           // we need to store the current zoom value because the new value multiply it
           _draggingScale = _scale;
+          setState(() {
+            _isZooming = true;
+          });
+        },
+        onScaleEnd: (details) {
+          setState(() {
+            _isZooming = false;
+          });
         },
         onScaleUpdate: (details) {
           setState(() {
@@ -230,7 +242,10 @@ class _GeographicMapState extends State<GeographicMap> {
           });
         },
         child: CustomPaint(
-          size: Size(constraints.maxWidth, constraints.maxHeight),
+          size: Size(
+            constraints.maxWidth,
+            constraints.maxHeight,
+          ),
           painter: MapPainter(
             countries: countries,
             cursorPosition: cursorPosition,
@@ -238,6 +253,7 @@ class _GeographicMapState extends State<GeographicMap> {
             theme: widget.theme,
             scale: _scale,
             selectedCode: _selectedCode,
+            canSelect: !_isZooming,
           ),
         ),
       ),

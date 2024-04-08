@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart' hide Path;
 import 'package:interactive_country_map/src/interactive_map_theme.dart';
 import 'package:interactive_country_map/src/svg/svg_parser.dart';
@@ -9,6 +11,7 @@ class MapPainter extends CustomPainter {
   final Offset offset;
   final double scale;
   final String? selectedCode;
+  final bool canSelect;
 
   MapPainter({
     super.repaint,
@@ -18,6 +21,7 @@ class MapPainter extends CustomPainter {
     required this.offset,
     required this.scale,
     required this.selectedCode,
+    required this.canSelect,
   });
 
   @override
@@ -48,8 +52,7 @@ class MapPainter extends CustomPainter {
       paintFiller.color =
           theme.mappingCode?[country.countryCode] ?? theme.defaultCountryColor;
 
-      if (selectedCode == country.countryCode ||
-          (cursorPosition != null && path.contains(cursorPosition!))) {
+      if (_canBeDrawnAsSelected(country.countryCode, path)) {
         canvas.drawPath(path, selectedPaintFiller);
         canvas.drawPath(path, selectedPaintBorder);
       } else {
@@ -57,6 +60,18 @@ class MapPainter extends CustomPainter {
         canvas.drawPath(path, paintBorder);
       }
     }
+  }
+
+  bool _canBeDrawnAsSelected(String countryCode, Path path) {
+    if (selectedCode != null) {
+      return selectedCode == countryCode;
+    } else if (canSelect &&
+        cursorPosition != null &&
+        path.contains(cursorPosition!)) {
+      return true;
+    }
+
+    return false;
   }
 
   @override

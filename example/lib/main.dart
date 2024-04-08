@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:interactive_country_map/interactive_country_map.dart';
 
@@ -17,6 +19,27 @@ class _MyAppState extends State<MyApp> {
   MapEntity map = MapEntity.france;
 
   InteractiveMapController controller = InteractiveMapController();
+
+  @override
+  void initState() {
+    super.initState();
+    var i = 0;
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      if (i > 2) {
+        timer.cancel();
+      }
+
+      setState(() {
+        selectedRegion = switch (i) {
+          0 => "FR-A",
+          1 => "FR-B",
+          2 => "FR-C",
+          _ => "FR-D",
+        };
+      });
+      i++;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +73,7 @@ class _MyAppState extends State<MyApp> {
                   });
                 },
                 map: map,
-                selectedCode: "FR-U",
+                selectedCode: selectedRegion,
               ),
             ),
             if (selectedRegion != null)
