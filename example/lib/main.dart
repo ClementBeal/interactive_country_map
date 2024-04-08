@@ -71,6 +71,13 @@ class _MyAppState extends State<MyApp> {
                         Marker(x: 250, y: 340),
                       ],
                     ),
+                    MarkerGroup(
+                      borderColor: Colors.blue.shade600,
+                      backgroundColor: Colors.blue.shade300,
+                      markers: [
+                        GeoMarker(long: 2.294481, lat: 48.858370),
+                      ],
+                    ),
                   ],
                 ),
               ),

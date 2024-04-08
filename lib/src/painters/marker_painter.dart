@@ -38,17 +38,24 @@ class MarkerPainter extends CustomPainter {
       // draw border
       canvas.drawPoints(
         PointMode.points,
-        markerGroup.markers.map((e) => Offset(e.x, e.y)).toList(),
+        markerGroup.markers.map((e) => _getOffset(e, size)).toList(),
         borderPointPainter,
       );
 
       // draw background
       canvas.drawPoints(
         PointMode.points,
-        markerGroup.markers.map((e) => Offset(e.x, e.y)).toList(),
+        markerGroup.markers.map((e) => _getOffset(e, size)).toList(),
         pointPainter,
       );
     }
+  }
+
+  Offset _getOffset(AMarker marker, Size size) {
+    return switch (marker) {
+      Marker m => Offset(m.x, m.y),
+      GeoMarker m => m.translate(countryMap, size),
+    };
   }
 
   @override

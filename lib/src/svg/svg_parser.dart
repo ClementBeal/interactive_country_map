@@ -75,10 +75,19 @@ class CountryMap {
   final double width;
   final double height;
 
+  final double minLat;
+  final double minLong;
+  final double maxLat;
+  final double maxLong;
+
   CountryMap({
     required this.countryPaths,
     required this.width,
     required this.height,
+    required this.minLat,
+    required this.maxLat,
+    required this.maxLong,
+    required this.minLong,
   });
 }
 
@@ -87,14 +96,19 @@ class SvgParser {
     final xml = XmlDocument.parse(data);
 
     final svgElement = xml.getElement("svg");
+    final geoBox = svgElement!.getAttribute("mapsvg:geoViewBox")!.split(" ");
 
     final countryPaths =
         xml.findAllElements("path").map((e) => _getCountryPath(e)).toList();
 
     final countryMap = CountryMap(
       countryPaths: countryPaths,
-      width: double.parse(svgElement!.getAttribute("width")!),
+      width: double.parse(svgElement.getAttribute("width")!),
       height: double.parse(svgElement.getAttribute("height")!),
+      maxLat: double.parse(geoBox[1]),
+      maxLong: double.parse(geoBox[2]),
+      minLat: double.parse(geoBox[3]),
+      minLong: double.parse(geoBox[0]),
     );
 
     return countryMap;
