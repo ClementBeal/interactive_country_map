@@ -78,6 +78,13 @@ MarkerGroup(
 ),
 ```
 
+## Usage Notice
+
+This package relies on resources provided by **MapSVG**, which is subject to the *Creative Commons Attribution 4.0 International LicenseI (CC BY 4.0 Deed). This means that when using this package, you must adhere to the terms of the *CC BY 4.0* license for any **MapSVG** resources utilized.  
+
+Please refer to the *CC BY 4.0 Deed* for more details on how to appropriately attribute **MapSVG**. Failure to comply with the license terms may result in legal consequences.
+
+
 ## Additional information
 
 Download maps on this website: [Maps](https://mapsvg.com/maps)
