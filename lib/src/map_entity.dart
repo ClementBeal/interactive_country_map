@@ -209,7 +209,7 @@ enum MapEntity {
 
   final String filename;
 
-  static MapEntity getEnumFromCountryCode(String countryCode) {
+  static MapEntity? getEnumFromCountryCode(String countryCode) {
     return switch (countryCode) {
       "AD" => MapEntity.andorra,
       "AO" => MapEntity.angola,
@@ -402,7 +402,7 @@ enum MapEntity {
       "YE" => MapEntity.yemen,
       "ZM" => MapEntity.zambia,
       "ZW" => MapEntity.zimbabwe,
-      String() => throw UnimplementedError(),
+      _ => null,
     };
   }
 }

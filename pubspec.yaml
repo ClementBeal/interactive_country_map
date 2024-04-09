@@ -1,6 +1,6 @@
 name: interactive_country_map
 description: "Add interactive map to your app and select any regions with a tap!"
-version: 0.0.2
+version: 0.0.3
 homepage: https://clementbeal.github.io/
 repository: https://github.com/ClementBeal/interactive_country_map
 issue_tracker: https://github.com/ClementBeal/interactive_country_map/issues
