@@ -74,7 +74,11 @@ class MapPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  bool shouldRepaint(covariant MapPainter oldDelegate) {
+    return oldDelegate.countryMap != countryMap ||
+        oldDelegate.cursorPosition != cursorPosition ||
+        oldDelegate.theme != theme ||
+        oldDelegate.selectedCode != selectedCode ||
+        oldDelegate.canSelect != canSelect;
   }
 }
