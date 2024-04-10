@@ -213,7 +213,7 @@ class SvgParser {
         }
 
         newSvgPath.points.add(movePoints);
-      } else if (token == "z") {
+      } else if (token == "z" || token == "Z") {
         newSvgPath.points.add(ClosePoint(isRelative: false));
       } else if (token == "l" || token == "L") {
         final coordinates = path[++i].split(",");
