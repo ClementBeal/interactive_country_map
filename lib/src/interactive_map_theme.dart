@@ -21,6 +21,9 @@ class InteractiveMapTheme {
   // The color of the country's border
   final Color borderColor;
 
+  // The color to fill the background of the map
+  final Color? backgroundColor;
+
   const InteractiveMapTheme({
     this.defaultCountryColor = const Color(0xff60435f),
     this.defaultSelectedCountryColor = const Color(0xff845c83),
@@ -28,5 +31,6 @@ class InteractiveMapTheme {
     this.borderWidth = 2.0,
     this.selectedBorderWidth = 3.0,
     this.borderColor = Colors.white,
+    this.backgroundColor,
   });
 }

@@ -45,6 +45,10 @@ class MapPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = theme.selectedBorderWidth / scale;
 
+    if (theme.backgroundColor != null) {
+      canvas.drawColor(theme.backgroundColor!, BlendMode.src);
+    }
+
     for (var country in countryMap.countryPaths) {
       final path = country.path.toPath(
         maxSize: size,

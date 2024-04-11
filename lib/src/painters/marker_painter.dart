@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart' hide Path;
 import 'package:interactive_country_map/src/interactive_map_theme.dart';
 import 'package:interactive_country_map/src/svg/markers.dart';
