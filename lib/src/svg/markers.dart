@@ -77,8 +77,8 @@ class GeoMarker extends AMarker {
 
 class MarkerGroup {
   final List<AMarker> markers;
-  final Color borderColor;
-  final Color backgroundColor;
+  Color? borderColor;
+  Color? backgroundColor;
 
   /// The border with of the circle/scare
   final double? borderWidth;
@@ -91,8 +91,8 @@ class MarkerGroup {
 
   MarkerGroup({
     required this.markers,
-    required this.borderColor,
-    required this.backgroundColor,
+    this.borderColor,
+    this.backgroundColor,
     this.borderWidth,
     this.markerSize,
     this.usePinMarker = false,

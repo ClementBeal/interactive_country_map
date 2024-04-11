@@ -32,8 +32,6 @@ class MarkerPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     for (var markerGroup in markers) {
-      pointPainter.color = markerGroup.backgroundColor;
-
       final pointsToDraw =
           markerGroup.markers.map((e) => _getOffset(e, size)).toList();
 
@@ -61,8 +59,9 @@ class MarkerPainter extends CustomPainter {
               marker + Offset(0, -15 / scale), 4.5 / scale, centerDisk);
         }
       } else {
+        pointPainter.color = markerGroup.backgroundColor ?? Colors.black;
         borderPointPainter
-          ..color = markerGroup.borderColor
+          ..color = markerGroup.borderColor ?? Colors.black
           ..strokeWidth = markerGroup.borderWidth! / scale;
 
         for (var marker in pointsToDraw) {
