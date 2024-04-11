@@ -153,9 +153,9 @@ class SvgParser {
       countryPaths: countryPaths,
       width: double.parse(svgElement.getAttribute("width")!),
       height: double.parse(svgElement.getAttribute("height")!),
-      maxLat: double.parse(geoBox[1]),
+      maxLat: double.parse(geoBox[3]),
       maxLong: double.parse(geoBox[2]),
-      minLat: double.parse(geoBox[3]),
+      minLat: double.parse(geoBox[1]),
       minLong: double.parse(geoBox[0]),
     );
 

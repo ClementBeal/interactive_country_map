@@ -20,21 +20,26 @@ class MarkerPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final borderPointPainter = Paint()
-      ..strokeWidth = 6
-      ..isAntiAlias = true
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-
-    final pointPainter = Paint()
       ..strokeWidth = 5
       ..isAntiAlias = true
       ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
+      ..style = PaintingStyle.fill;
+
+    final pointPainter = Paint()
+      ..strokeWidth = 4
+      ..isAntiAlias = true
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.fill;
 
     for (var markerGroup in markers) {
       borderPointPainter.color = markerGroup.borderColor;
       pointPainter.color = markerGroup.backgroundColor;
 
+      // for (var marker in markerGroup.markers) {
+      //   final markerOffset = _getOffset(marker, size);
+      //   // canvas.drawLine(
+      //   //     markerOffset, markerOffset + Offset(0, 0), borderPointPainter);
+      // }
       // draw border
       canvas.drawPoints(
         PointMode.points,
@@ -54,6 +59,8 @@ class MarkerPainter extends CustomPainter {
   Offset _getOffset(AMarker marker, Size size) {
     return switch (marker) {
       Marker m => Offset(m.x, m.y),
+      GeoMarker m => m.getOffset(countryMap.minLat, countryMap.minLong,
+          countryMap.maxLat, countryMap.maxLong, size),
     };
   }
 
