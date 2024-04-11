@@ -30,17 +30,36 @@ class MarkerPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     for (var markerGroup in markers) {
-      borderPointPainter
-        ..color = markerGroup.borderColor
-        ..strokeWidth = markerGroup.borderWidth / scale;
       pointPainter.color = markerGroup.backgroundColor;
 
       final pointsToDraw =
           markerGroup.markers.map((e) => _getOffset(e, size)).toList();
-      for (var marker in pointsToDraw) {
-        canvas.drawCircle(
-            marker, markerGroup.markerSize / scale, borderPointPainter);
-        canvas.drawCircle(marker, markerGroup.markerSize / scale, pointPainter);
+
+      if (markerGroup.usePinMarker) {
+        pointPainter.color = Colors.red.shade300;
+
+        final pinBase = Paint()
+          ..color = Colors.grey.shade300
+          ..isAntiAlias = true
+          ..strokeWidth = 2.0
+          ..style = PaintingStyle.fill;
+
+        for (var marker in pointsToDraw) {
+          // we draw a custom pin. Until I find an easy way to draw an image, I'll keep this solution
+          canvas.drawLine(marker, marker + Offset(0, -10), pinBase);
+          canvas.drawCircle(marker + Offset(0, -10), 3 / scale, pointPainter);
+        }
+      } else {
+        borderPointPainter
+          ..color = markerGroup.borderColor
+          ..strokeWidth = markerGroup.borderWidth! / scale;
+
+        for (var marker in pointsToDraw) {
+          canvas.drawCircle(
+              marker, markerGroup.markerSize! / scale, borderPointPainter);
+          canvas.drawCircle(
+              marker, markerGroup.markerSize! / scale, pointPainter);
+        }
       }
     }
   }

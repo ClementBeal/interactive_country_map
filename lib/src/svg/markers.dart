@@ -86,11 +86,16 @@ class MarkerGroup {
   /// It will depends if we draw a circle (diameter) or a scare (side)
   final double? markerSize;
 
+  /// Provide an image to draw
+  final bool usePinMarker;
+
   MarkerGroup({
     required this.markers,
     required this.borderColor,
     required this.backgroundColor,
     this.borderWidth,
     this.markerSize,
-  });
+    this.usePinMarker = false,
+  }) : assert((borderWidth == null && markerSize == null && usePinMarker) ||
+            (borderWidth != null && markerSize != null && !usePinMarker));
 }
