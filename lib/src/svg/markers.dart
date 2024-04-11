@@ -63,7 +63,7 @@ class GeoMarker extends AMarker {
 
     final radLat = lat * pi / 180;
 
-    final worldMapWidth = ((mapSize.width / longDelta) * 360) / (2 * pi);
+    final worldMapWidth = ((mapSize.width / longDelta) * 180) / (pi);
     final mapOffsetY = (worldMapWidth /
         2 *
         log((1 + sin(mapLatBottomDegree)) / (1 - sin(mapLatBottomDegree))));
