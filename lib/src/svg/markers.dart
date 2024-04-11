@@ -80,9 +80,17 @@ class MarkerGroup {
   final Color borderColor;
   final Color backgroundColor;
 
+  /// The border with of the circle/scare
+  final double? borderWidth;
+
+  /// It will depends if we draw a circle (diameter) or a scare (side)
+  final double? markerSize;
+
   MarkerGroup({
     required this.markers,
     required this.borderColor,
     required this.backgroundColor,
+    this.borderWidth,
+    this.markerSize,
   });
 }
