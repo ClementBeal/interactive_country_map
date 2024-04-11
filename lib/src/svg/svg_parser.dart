@@ -1,4 +1,6 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:interactive_country_map/src/svg/markers.dart';
 import 'package:xml/xml.dart';
 
 sealed class Point {
@@ -132,6 +134,21 @@ class CountryMap {
     required this.rightLong,
     required this.bottomLat,
   });
+
+  String? getCountryCodeFromLocation(double lat, double long) {
+    final position = GeoMarker(lat: lat, long: long)
+        .getOffset(rightLong, topLat, leftLong, bottomLat, Size(width, height));
+
+    final selectedCountry =
+        countryPaths.firstWhereOrNull((element) => element.path
+            .toPath(
+              maxSize: Size(width, height),
+              originalMapSize: Size(width, height),
+            )
+            .contains(position));
+
+    return selectedCountry?.countryCode;
+  }
 }
 
 class SvgParser {

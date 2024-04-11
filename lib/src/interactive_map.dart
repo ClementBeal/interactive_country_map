@@ -89,10 +89,10 @@ class InteractiveMap extends StatefulWidget {
   final String? selectedCode;
 
   @override
-  State<InteractiveMap> createState() => _InteractiveMapState();
+  State<InteractiveMap> createState() => InteractiveMapState();
 }
 
-class _InteractiveMapState extends State<InteractiveMap> {
+class InteractiveMapState extends State<InteractiveMap> {
   String? svgData;
   late final TransformationController _controller;
   late double _scale;
@@ -187,6 +187,8 @@ class _GeographicMapState extends State<GeographicMap> {
   Offset? cursorPosition;
 
   String? _selectedCode;
+
+  // final _painterKey = GlobalKey<CustomPaint>();
 
   @override
   void initState() {

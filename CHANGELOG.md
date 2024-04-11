@@ -1,3 +1,7 @@
+## 0.0.6
+
+- Add function to know which region contains a specific long/lat
+
 ## 0.0.5
 
 - Add loaders to load SVG from files or assets
