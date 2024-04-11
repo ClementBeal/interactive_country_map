@@ -128,58 +128,60 @@ class FranceWolfMap extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          InteractiveMap(
-            MapEntity.world,
-            theme: InteractiveMapTheme(
-                borderColor: Colors.green.shade800,
-                borderWidth: 1.0,
-                selectedBorderWidth: 2.0,
-                defaultCountryColor: Colors.green.shade200,
-                backgroundColor: Colors.lightBlue.shade100,
-                mappingCode: {
-                  ...MappingHelper.sameColor(
-                    Colors.red.shade200,
-                    [
-                      "FR-05",
-                      "FR-06",
-                      "FR-38",
-                      "FR-04",
-                      "FR-26",
-                      "FR-2A",
-                      "FR-2B"
-                    ],
-                  ),
-                  ...MappingHelper.sameColor(
-                    Colors.blue.shade300,
-                    [
-                      "FR-09",
-                      "FR-66",
-                      "FR-31",
-                    ],
-                  ),
-                }),
-            loadingBuilder: (context) =>
-                const Center(child: CircularProgressIndicator()),
-            minScale: 0.3,
-            maxScale: 32,
-            markers: [
-              MarkerGroup(
-                // markers: List.generate(
-                //     1000,
-                //     (index) => GeoMarker(
-                //         lat: Random().nextDouble() * 160 - 40,
-                //         long: Random().nextDouble() * 360 - 180)),
-                markers: [
-                  GeoMarker(lat: 48.864716, long: 2.349014),
-                  GeoMarker(lat: 38.9072, long: -77.0369),
-                  GeoMarker(lat: 51.5074, long: -0.1278),
-                  GeoMarker(lat: 35.6895, long: 139.6917),
-                  GeoMarker(lat: -33.4489, long: -70.6693),
-                ],
-                borderColor: Colors.blue.shade700,
-                backgroundColor: Colors.blue.shade200.withOpacity(0.4),
-              ),
-            ],
+          Flexible(
+            child: InteractiveMap(
+              MapEntity.world,
+              theme: InteractiveMapTheme(
+                  borderColor: Colors.green.shade800,
+                  borderWidth: 1.0,
+                  selectedBorderWidth: 2.0,
+                  defaultCountryColor: Colors.green.shade200,
+                  backgroundColor: Colors.lightBlue.shade100,
+                  mappingCode: {
+                    ...MappingHelper.sameColor(
+                      Colors.red.shade200,
+                      [
+                        "FR-05",
+                        "FR-06",
+                        "FR-38",
+                        "FR-04",
+                        "FR-26",
+                        "FR-2A",
+                        "FR-2B"
+                      ],
+                    ),
+                    ...MappingHelper.sameColor(
+                      Colors.blue.shade300,
+                      [
+                        "FR-09",
+                        "FR-66",
+                        "FR-31",
+                      ],
+                    ),
+                  }),
+              loadingBuilder: (context) =>
+                  const Center(child: CircularProgressIndicator()),
+              minScale: 0.3,
+              maxScale: 32,
+              markers: [
+                MarkerGroup(
+                  // markers: List.generate(
+                  //     1000,
+                  //     (index) => GeoMarker(
+                  //         lat: Random().nextDouble() * 160 - 40,
+                  //         long: Random().nextDouble() * 360 - 180)),
+                  markers: [
+                    GeoMarker(lat: 48.864716, long: 2.349014),
+                    GeoMarker(lat: 38.9072, long: -77.0369),
+                    GeoMarker(lat: 51.5074, long: -0.1278),
+                    GeoMarker(lat: 35.6895, long: 139.6917),
+                    GeoMarker(lat: -33.4489, long: -70.6693),
+                  ],
+                  borderColor: Colors.blue.shade700,
+                  backgroundColor: Colors.blue.shade200.withOpacity(0.4),
+                ),
+              ],
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
