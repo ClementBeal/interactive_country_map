@@ -2,8 +2,9 @@
 
 - Add loaders to load SVG from files or assets
 - Add `GeoMarker`. A marker that uses longitude and latitude coordinates
-- More Marker theming
+- More marker theming
 - Can fill the background of the map with a color
+- Draw a custom pin for the `GeoMarker`
 
 ## 0.0.4
 
