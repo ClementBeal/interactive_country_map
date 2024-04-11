@@ -45,6 +45,7 @@ class _FranceDepartmentsPageState extends State<FranceDepartmentsPage> {
         children: [
           Expanded(
             child: InteractiveMap(
+              map,
               theme: InteractiveMapTheme(
                 borderColor: Colors.green.shade800,
                 borderWidth: 1.0,
@@ -54,7 +55,6 @@ class _FranceDepartmentsPageState extends State<FranceDepartmentsPage> {
               ),
               loadingBuilder: (context) =>
                   const Center(child: CircularProgressIndicator()),
-              map: map,
               selectedCode: selectedRegion,
               minScale: 0.3,
               maxScale: 4,
@@ -130,6 +130,7 @@ class FranceWolfMap extends StatelessWidget {
         children: [
           Expanded(
             child: InteractiveMap(
+              MapEntity.franceDepartments,
               theme: InteractiveMapTheme(
                   borderColor: Colors.green.shade800,
                   borderWidth: 1.0,
@@ -159,7 +160,6 @@ class FranceWolfMap extends StatelessWidget {
                   }),
               loadingBuilder: (context) =>
                   const Center(child: CircularProgressIndicator()),
-              map: MapEntity.franceDepartments,
               minScale: 0.3,
               maxScale: 4,
             ),
