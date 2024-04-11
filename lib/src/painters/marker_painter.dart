@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart' hide Path;
 import 'package:interactive_country_map/src/interactive_map_theme.dart';
 import 'package:interactive_country_map/src/svg/markers.dart';
@@ -36,18 +38,27 @@ class MarkerPainter extends CustomPainter {
           markerGroup.markers.map((e) => _getOffset(e, size)).toList();
 
       if (markerGroup.usePinMarker) {
-        pointPainter.color = Colors.red.shade300;
+        pointPainter.color = const Color(0xffeb2f06);
 
-        final pinBase = Paint()
-          ..color = Colors.grey.shade300
+        final centerDisk = Paint()
+          ..color = Colors.white
           ..isAntiAlias = true
-          ..strokeWidth = 2.0
+          ..strokeWidth = 2.0 / scale
           ..style = PaintingStyle.fill;
 
+        // we draw a custom pin. Until I find an easy way to draw an image, I'll keep this solution
         for (var marker in pointsToDraw) {
-          // we draw a custom pin. Until I find an easy way to draw an image, I'll keep this solution
-          canvas.drawLine(marker, marker + Offset(0, -10), pinBase);
-          canvas.drawCircle(marker + Offset(0, -10), 3 / scale, pointPainter);
+          final path = Path()
+            ..moveTo(marker.dx, marker.dy)
+            ..relativeLineTo(-7 / scale, -15 / scale)
+            ..relativeLineTo(14 / scale, 0)
+            ..close();
+
+          canvas.drawPath(path, pointPainter);
+          canvas.drawCircle(
+              marker + Offset(0, -15 / scale), 7 / scale, pointPainter);
+          canvas.drawCircle(
+              marker + Offset(0, -15 / scale), 4.5 / scale, centerDisk);
         }
       } else {
         borderPointPainter
