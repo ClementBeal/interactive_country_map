@@ -17,52 +17,61 @@ class GeoMarker extends AMarker {
 
   GeoMarker({required this.lat, required this.long});
 
-  Offset _getPosition(double lat, double long, double l) {
-    const earthRadius = 6371;
-    final x = earthRadius * long * cos(l);
-    final y = earthRadius * lat;
+  double degreeToRadian(double degree) {
+    return degree * pi / 180;
+  }
+
+  /// Big thanks to this person
+  ///
+  /// https://stackoverflow.com/a/10401734
+  ///
+  /// <?php
+  ///
+  /// $mapWidth = 1500;
+  /// $mapHeight = 1577;
+  ///
+  /// $mapLonLeft = 9.8;
+  /// $mapLonRight = 10.2;
+  /// $mapLonDelta = $mapLonRight - $mapLonLeft;
+  ///
+  /// $mapLatBottom = 53.45;
+  /// $mapLatBottomDegree = $mapLatBottom * M_PI / 180;
+  ///
+  /// function convertGeoToPixel($lat, $lon)
+  /// {
+  ///     global $mapWidth, $mapHeight, $mapLonLeft, $mapLonDelta, $mapLatBottom, $mapLatBottomDegree;
+  ///
+  ///     $x = ($lon - $mapLonLeft) * ($mapWidth / $mapLonDelta);
+  ///
+  ///     $lat = $lat * M_PI / 180;
+  ///     $worldMapWidth = (($mapWidth / $mapLonDelta) * 360) / (2 * M_PI);
+  ///     $mapOffsetY = ($worldMapWidth / 2 * log((1 + sin($mapLatBottomDegree)) / (1 - sin($mapLatBottomDegree))));
+  ///     $y = $mapHeight - (($worldMapWidth / 2 * log((1 + sin($lat)) / (1 - sin($lat)))) - $mapOffsetY);
+  ///
+  ///     return array($x, $y);
+  /// }
+  ///
+  /// $position = convertGeoToPixel(53.7, 9.95);
+  /// echo "x: ".$position[0]." / ".$position[1];
+  ///
+  /// ?>
+  Offset getOffset(double rightLong, double topLat, double leftLong,
+      double bottomLat, Size mapSize) {
+    final longDelta = rightLong - leftLong;
+    final mapLatBottomDegree = bottomLat * pi / 180;
+    final x = (long - leftLong) * (mapSize.width / longDelta);
+
+    final radLat = lat * pi / 180;
+
+    final worldMapWidth = ((mapSize.width / longDelta) * 360) / (2 * pi);
+    final mapOffsetY = (worldMapWidth /
+        2 *
+        log((1 + sin(mapLatBottomDegree)) / (1 - sin(mapLatBottomDegree))));
+    final y = mapSize.height -
+        ((worldMapWidth / 2 * log((1 + sin(radLat)) / (1 - sin(radLat)))) -
+            mapOffsetY);
 
     return Offset(x, y);
-  }
-
-  Offset _normalize(
-      Offset topLeftCorner, Offset bottomRightCorner, Offset position) {
-    return Offset(
-        (position.dx - topLeftCorner.dx) /
-            (bottomRightCorner.dx - topLeftCorner.dx),
-        (position.dy - topLeftCorner.dy) /
-            (bottomRightCorner.dy - topLeftCorner.dy));
-  }
-
-  Offset getOffset(double minLat, double minLong, double maxLat, double maxLong,
-      Size mapSize) {
-    final l = (maxLat + minLat) / 2;
-
-    final topLeftCorner = _getPosition(minLat, minLong, l);
-    final bottomRightCorner = _getPosition(maxLat, maxLong, l);
-
-    final normalizedTopLeftCorner =
-        _normalize(topLeftCorner, bottomRightCorner, topLeftCorner);
-
-    final normalizedBottomRightCorner =
-        _normalize(topLeftCorner, bottomRightCorner, bottomRightCorner);
-
-    // print(normalizedTopLeftCorner);
-    // print(normalizedBottomRightCorner);
-
-    final currentPos = _getPosition(lat, long, l);
-    // print(currentPos);
-    // print(mapSize);
-    final n = _normalize(topLeftCorner, bottomRightCorner, currentPos);
-    print(n);
-
-    // print(currentPos);
-
-    // print(_getPosition(l, (maxLong + minLong) / 2, l));
-
-    // print((bottomRightCorner.dx - topLeftCorner.dx));
-
-    return Offset(mapSize.width * n.dx, mapSize.height * n.dy);
   }
 }
 

@@ -237,24 +237,31 @@ class _GeographicMapState extends State<GeographicMap> {
             });
           }
         },
-        child: LayoutBuilder(
-          builder: (context, constraints) {
+        child: Builder(
+          builder: (context) {
             if (countryMap == null) {
               return const CircularProgressIndicator();
             }
-            return CustomPaint(
-              size: Size(constraints.maxWidth, constraints.maxHeight),
-              painter: MapPainter(
-                countryMap: countryMap!,
-                cursorPosition: cursorPosition,
-                theme: widget.theme,
-                selectedCode: _selectedCode,
-                canSelect: widget.onCountrySelected != null,
-              ),
-              foregroundPainter: MarkerPainter(
-                countryMap: countryMap!,
-                theme: widget.theme,
-                markers: widget.markers,
+
+            return AspectRatio(
+              aspectRatio:
+                  Size(countryMap!.width, countryMap!.height).aspectRatio,
+              child: LayoutBuilder(
+                builder: (context, constraints) => CustomPaint(
+                  size: Size(constraints.maxWidth, constraints.maxHeight),
+                  painter: MapPainter(
+                    countryMap: countryMap!,
+                    cursorPosition: cursorPosition,
+                    theme: widget.theme,
+                    selectedCode: _selectedCode,
+                    canSelect: widget.onCountrySelected != null,
+                  ),
+                  foregroundPainter: MarkerPainter(
+                    countryMap: countryMap!,
+                    theme: widget.theme,
+                    markers: widget.markers,
+                  ),
+                ),
               ),
             );
           },

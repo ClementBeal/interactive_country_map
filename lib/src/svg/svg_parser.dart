@@ -118,19 +118,19 @@ class CountryMap {
   final double width;
   final double height;
 
-  final double minLat;
-  final double minLong;
-  final double maxLat;
-  final double maxLong;
+  final double topLat;
+  final double bottomLat;
+  final double leftLong;
+  final double rightLong;
 
   CountryMap({
     required this.countryPaths,
     required this.width,
     required this.height,
-    required this.minLat,
-    required this.maxLat,
-    required this.maxLong,
-    required this.minLong,
+    required this.topLat,
+    required this.leftLong,
+    required this.rightLong,
+    required this.bottomLat,
   });
 }
 
@@ -153,10 +153,10 @@ class SvgParser {
       countryPaths: countryPaths,
       width: double.parse(svgElement.getAttribute("width")!),
       height: double.parse(svgElement.getAttribute("height")!),
-      maxLat: double.parse(geoBox[3]),
-      maxLong: double.parse(geoBox[2]),
-      minLat: double.parse(geoBox[1]),
-      minLong: double.parse(geoBox[0]),
+      leftLong: double.parse(geoBox[0]),
+      rightLong: double.parse(geoBox[2]),
+      topLat: double.parse(geoBox[1]),
+      bottomLat: double.parse(geoBox[3]),
     );
 
     return countryMap;

@@ -130,7 +130,7 @@ class FranceWolfMap extends StatelessWidget {
         children: [
           Expanded(
             child: InteractiveMap(
-              MapEntity.franceDepartments,
+              MapEntity.world,
               theme: InteractiveMapTheme(
                   borderColor: Colors.green.shade800,
                   borderWidth: 1.0,
@@ -162,6 +162,19 @@ class FranceWolfMap extends StatelessWidget {
                   const Center(child: CircularProgressIndicator()),
               minScale: 0.3,
               maxScale: 4,
+              markers: [
+                MarkerGroup(
+                  markers: [
+                    GeoMarker(lat: 48.864716, long: 2.349014),
+                    GeoMarker(lat: 38.9072, long: -77.0369),
+                    GeoMarker(lat: 51.5074, long: -0.1278),
+                    GeoMarker(lat: 35.6895, long: 139.6917),
+                    GeoMarker(lat: -33.4489, long: -70.6693),
+                  ],
+                  borderColor: Colors.blue.shade700,
+                  backgroundColor: Colors.blue.shade200.withOpacity(0.4),
+                ),
+              ],
             ),
           ),
           Padding(
