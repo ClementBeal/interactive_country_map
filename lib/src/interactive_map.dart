@@ -8,7 +8,11 @@ import 'package:interactive_country_map/src/painters/map_painter.dart';
 import 'package:interactive_country_map/src/painters/marker_painter.dart';
 import 'package:interactive_country_map/src/svg/svg_parser.dart';
 
+/// Draw an interactive map from a SVG.
+///
+/// The SVG files must have `<path` with a field `id` otherwise the interactivity will not work
 class InteractiveMap extends StatefulWidget {
+  /// Use one of the predelivered map of the package
   InteractiveMap(
     MapEntity map, {
     super.key,
@@ -23,6 +27,7 @@ class InteractiveMap extends StatefulWidget {
     this.markers = const [],
   }) : loader = MapEntityLoader(entity: map);
 
+  // Load a map from an user's file
   InteractiveMap.file(
     File file, {
     super.key,
@@ -37,6 +42,7 @@ class InteractiveMap extends StatefulWidget {
     this.markers = const [],
   }) : loader = FileLoader(file: file);
 
+  // Load a map from the assets of the app
   InteractiveMap.asset(
     String assetName, {
     super.key,
@@ -51,13 +57,14 @@ class InteractiveMap extends StatefulWidget {
     this.markers = const [],
   }) : loader = AssetLoader(assetName: assetName);
 
+  /// Used to load the SVG's string from somewhere(assets, files, others...)
   final SvgLoader loader;
 
   /// Called when a country/region is selected. Return the code as defined by the ISO 3166-2
   /// https://en.wikipedia.org/wiki/ISO_3166-2
   final void Function(String code)? onCountrySelected;
 
-  ///
+  /// Draw layers of markers over the map
   final List<MarkerGroup> markers;
 
   // Theme
@@ -113,6 +120,7 @@ class _InteractiveMapState extends State<InteractiveMap> {
     }
   }
 
+  /// Load the SVG's data
   Future<void> loadMap() async {
     final tmp = await widget.loader.load(context);
 
