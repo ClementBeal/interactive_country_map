@@ -1,17 +1,18 @@
+import 'dart:io';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:interactive_country_map/src/interactive_map_theme.dart';
-import 'package:interactive_country_map/src/map_entity.dart';
+import 'package:interactive_country_map/interactive_country_map.dart';
+import 'package:interactive_country_map/src/loaders.dart';
 import 'package:interactive_country_map/src/painters/map_painter.dart';
 import 'package:interactive_country_map/src/painters/marker_painter.dart';
-import 'package:interactive_country_map/src/svg/markers.dart';
 import 'package:interactive_country_map/src/svg/svg_parser.dart';
 
 class InteractiveMap extends StatefulWidget {
-  const InteractiveMap({
+  InteractiveMap(
+    MapEntity map, {
     super.key,
     this.onCountrySelected,
-    required this.map,
     this.theme = const InteractiveMapTheme(),
     this.loadingBuilder,
     this.minScale = 0.5,
@@ -20,7 +21,37 @@ class InteractiveMap extends StatefulWidget {
     this.selectedCode,
     this.initialScale,
     this.markers = const [],
-  }) : assert(minScale > 0);
+  }) : loader = MapEntityLoader(entity: map);
+
+  InteractiveMap.file(
+    File file, {
+    super.key,
+    this.onCountrySelected,
+    this.theme = const InteractiveMapTheme(),
+    this.loadingBuilder,
+    this.minScale = 0.5,
+    this.currentScale,
+    this.maxScale = 8,
+    this.selectedCode,
+    this.initialScale,
+    this.markers = const [],
+  }) : loader = FileLoader(file: file);
+
+  InteractiveMap.asset(
+    String assetName, {
+    super.key,
+    this.onCountrySelected,
+    this.theme = const InteractiveMapTheme(),
+    this.loadingBuilder,
+    this.minScale = 0.5,
+    this.currentScale,
+    this.maxScale = 8,
+    this.selectedCode,
+    this.initialScale,
+    this.markers = const [],
+  }) : loader = AssetLoader(assetName: assetName);
+
+  final SvgLoader loader;
 
   /// Called when a country/region is selected. Return the code as defined by the ISO 3166-2
   /// https://en.wikipedia.org/wiki/ISO_3166-2
@@ -28,9 +59,6 @@ class InteractiveMap extends StatefulWidget {
 
   ///
   final List<MarkerGroup> markers;
-
-  /// The name of the map to use (USA, China, France...)
-  final MapEntity map;
 
   // Theme
   final InteractiveMapTheme theme;
@@ -75,7 +103,7 @@ class _InteractiveMapState extends State<InteractiveMap> {
   void didUpdateWidget(InteractiveMap oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (oldWidget.map.name != widget.map.name) {
+    if (oldWidget.loader != widget.loader) {
       loadMap();
     }
 
@@ -86,8 +114,7 @@ class _InteractiveMapState extends State<InteractiveMap> {
   }
 
   Future<void> loadMap() async {
-    final tmp = await DefaultAssetBundle.of(context).loadString(
-        "packages/interactive_country_map/res/maps/${widget.map.filename}.svg");
+    final tmp = await widget.loader.load(context);
 
     setState(() {
       svgData = tmp;
