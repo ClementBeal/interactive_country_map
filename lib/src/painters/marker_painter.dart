@@ -9,24 +9,26 @@ class MarkerPainter extends CustomPainter {
   final CountryMap countryMap;
   final InteractiveMapTheme theme;
   final List<MarkerGroup> markers;
+  final double scale;
 
   MarkerPainter({
     super.repaint,
     required this.countryMap,
     required this.theme,
     required this.markers,
+    required this.scale,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
     final borderPointPainter = Paint()
-      ..strokeWidth = 2
+      ..strokeWidth = 2 / scale
       ..isAntiAlias = true
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
 
     final pointPainter = Paint()
-      ..strokeWidth = 18
+      ..strokeWidth = 18 / scale
       ..isAntiAlias = true
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.fill;
@@ -38,8 +40,8 @@ class MarkerPainter extends CustomPainter {
       final pointsToDraw =
           markerGroup.markers.map((e) => _getOffset(e, size)).toList();
       for (var marker in pointsToDraw) {
-        canvas.drawCircle(marker, 18, borderPointPainter);
-        canvas.drawCircle(marker, 17, pointPainter);
+        canvas.drawCircle(marker, 18 / scale, borderPointPainter);
+        canvas.drawCircle(marker, 17 / scale, pointPainter);
       }
     }
   }
@@ -60,7 +62,10 @@ class MarkerPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+  bool shouldRepaint(covariant MarkerPainter oldDelegate) {
+    return oldDelegate.markers != markers ||
+        oldDelegate.scale != scale ||
+        oldDelegate.countryMap != countryMap ||
+        oldDelegate.theme != theme;
   }
 }

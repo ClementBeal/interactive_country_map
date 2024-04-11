@@ -95,12 +95,14 @@ class InteractiveMap extends StatefulWidget {
 class _InteractiveMapState extends State<InteractiveMap> {
   String? svgData;
   late final TransformationController _controller;
+  late double _scale;
 
   @override
   void initState() {
     super.initState();
 
-    final scaleMatrix = Matrix4.identity()..scale(widget.initialScale ?? 1.0);
+    _scale = widget.initialScale ?? 1.0;
+    final scaleMatrix = Matrix4.identity()..scale(_scale);
     _controller = TransformationController(scaleMatrix);
 
     Future.delayed(Duration.zero, loadMap);
@@ -137,12 +139,18 @@ class _InteractiveMapState extends State<InteractiveMap> {
         minScale: widget.minScale,
         maxScale: widget.maxScale,
         panEnabled: true,
+        onInteractionUpdate: (details) {
+          setState(() {
+            _scale = _controller.value[0];
+          });
+        },
         child: GeographicMap(
           svgData: svgData!,
           theme: widget.theme,
           onCountrySelected: widget.onCountrySelected,
           selectedCode: widget.selectedCode,
           markers: widget.markers,
+          scale: _scale,
         ),
       );
     } else {
@@ -159,12 +167,14 @@ class GeographicMap extends StatefulWidget {
     this.onCountrySelected,
     this.selectedCode,
     required this.markers,
+    required this.scale,
   });
 
   final String svgData;
   final InteractiveMapTheme theme;
   final void Function(String code)? onCountrySelected;
   final List<MarkerGroup> markers;
+  final double scale;
 
   final String? selectedCode;
 
@@ -255,11 +265,13 @@ class _GeographicMapState extends State<GeographicMap> {
                     theme: widget.theme,
                     selectedCode: _selectedCode,
                     canSelect: widget.onCountrySelected != null,
+                    scale: widget.scale,
                   ),
                   foregroundPainter: MarkerPainter(
                     countryMap: countryMap!,
                     theme: widget.theme,
                     markers: widget.markers,
+                    scale: widget.scale,
                   ),
                 ),
               ),

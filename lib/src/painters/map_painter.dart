@@ -10,6 +10,7 @@ class MapPainter extends CustomPainter {
   final InteractiveMapTheme theme;
   final String? selectedCode;
   final bool canSelect;
+  final double scale;
 
   MapPainter({
     super.repaint,
@@ -18,6 +19,7 @@ class MapPainter extends CustomPainter {
     required this.theme,
     required this.selectedCode,
     required this.canSelect,
+    required this.scale,
   });
 
   @override
@@ -36,12 +38,12 @@ class MapPainter extends CustomPainter {
       ..color = theme.borderColor
       ..isAntiAlias = true
       ..style = PaintingStyle.stroke
-      ..strokeWidth = theme.borderWidth;
+      ..strokeWidth = theme.borderWidth / scale;
     final selectedPaintBorder = Paint()
       ..color = theme.borderColor
       ..isAntiAlias = true
       ..style = PaintingStyle.stroke
-      ..strokeWidth = theme.selectedBorderWidth;
+      ..strokeWidth = theme.selectedBorderWidth / scale;
 
     for (var country in countryMap.countryPaths) {
       final path = country.path.toPath(
