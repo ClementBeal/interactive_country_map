@@ -137,7 +137,7 @@ class InteractiveMapState extends State<InteractiveMap> {
       return InteractiveViewer(
         transformationController: _controller,
         minScale: widget.minScale,
-        maxScale: widget.maxScale,
+        maxScale: 200,
         panEnabled: true,
         onInteractionUpdate: (details) {
           setState(() {

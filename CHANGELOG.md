@@ -1,3 +1,7 @@
+## 0.0.7
+
+- Add more examples
+
 ## 0.0.6
 
 - Add function to know which region contains a specific long/lat
