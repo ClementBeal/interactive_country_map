@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:interactive_country_map/interactive_country_map.dart';
 
+import 'svg_error_screen.dart';
+
 class WorldMapScreen extends StatelessWidget {
   const WorldMapScreen({super.key});
 
@@ -13,6 +15,11 @@ class WorldMapScreen extends StatelessWidget {
           Expanded(
             child: InteractiveMap(
               MapEntity.world,
+              onError: (details, svgData) {
+                final String message = details.exceptionAsString();
+                final StackTrace? stack = details.stack;
+                return svgErrorWidget(message);
+              },
               theme: InteractiveMapTheme(
                 borderWidth: 1,
                 backgroundColor: Colors.blue.shade800,

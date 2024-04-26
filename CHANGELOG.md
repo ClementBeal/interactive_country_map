@@ -1,3 +1,11 @@
+
+## 0.0.8
+
+- svgData = null; in loadMap() to catch any errors
+- Add function, onLoad, to a FutureBuilder called after SVG has loaded
+- Add function, onError, if onLoad() errors. Option is to continue or not.
+- Hide the State class as Library private
+
 ## 0.0.7
 
 - Add more examples

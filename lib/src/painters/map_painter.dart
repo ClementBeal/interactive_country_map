@@ -4,14 +4,9 @@ import 'package:flutter/material.dart' hide Path;
 import 'package:interactive_country_map/src/interactive_map_theme.dart';
 import 'package:interactive_country_map/src/svg/svg_parser.dart';
 
+////
 class MapPainter extends CustomPainter {
-  final CountryMap countryMap;
-  final Offset? cursorPosition;
-  final InteractiveMapTheme theme;
-  final String? selectedCode;
-  final bool canSelect;
-  final double scale;
-
+  ///
   MapPainter({
     super.repaint,
     required this.countryMap,
@@ -21,6 +16,19 @@ class MapPainter extends CustomPainter {
     required this.canSelect,
     required this.scale,
   });
+
+  ///
+  final CountryMap countryMap;
+  ///
+  final Offset? cursorPosition;
+  ///
+  final InteractiveMapTheme theme;
+  ///
+  final String? selectedCode;
+  ///
+  final bool canSelect;
+  ///
+  final double scale;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -49,7 +57,7 @@ class MapPainter extends CustomPainter {
       canvas.drawColor(theme.backgroundColor!, BlendMode.src);
     }
 
-    for (var country in countryMap.countryPaths) {
+    for (final country in countryMap.countryPaths) {
       final path = country.path.toPath(
         maxSize: size,
         originalMapSize: Size(countryMap.width, countryMap.height),
