@@ -139,6 +139,7 @@ class _InteractiveMapState extends State<InteractiveMap> {
 
   /// Load the SVG's data
   Future<String> loadMap() async {
+    svgData = null; // so to test for null
     final svg = await widget.loader.load(context);
     svgData = svg;
     await widget.onLoaded?.call(svg);
@@ -194,8 +195,6 @@ class _InteractiveMapState extends State<InteractiveMap> {
           // Optionally supply a Widget
           mapWidget = _svgDataError(e, svgData, 'InteractiveViewer() failed', stack: stack);
         }
-        // A large string is cleared
-        svgData = null;
       }
     }
     // A Widget must be supplied.

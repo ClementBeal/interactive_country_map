@@ -1,4 +1,8 @@
 
+## 0.0.10
+
+- svgData = null; // so to test for null
+
 ## 0.0.9
 
 - try-catch around InteractiveViewer()
