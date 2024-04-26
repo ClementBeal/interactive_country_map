@@ -2,21 +2,30 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+///
 sealed class AMarker {}
 
+///
 class Marker extends AMarker {
+  ///
+  Marker({required this.x, required this.y});
+  ///
   final double x;
+  ///
   final double y;
 
-  Marker({required this.x, required this.y});
 }
 
+///
 class GeoMarker extends AMarker {
+  ///
+  GeoMarker({required this.lat, required this.long});
+  ///
   final double lat;
+  ///
   final double long;
 
-  GeoMarker({required this.lat, required this.long});
-
+  ///
   double degreeToRadian(double degree) {
     return degree * pi / 180;
   }
@@ -63,10 +72,10 @@ class GeoMarker extends AMarker {
 
     final radLat = lat * pi / 180;
 
-    final worldMapWidth = ((mapSize.width / longDelta) * 180) / (pi);
-    final mapOffsetY = (worldMapWidth /
+    final worldMapWidth = ((mapSize.width / longDelta) * 180) / pi;
+    final mapOffsetY = worldMapWidth /
         2 *
-        log((1 + sin(mapLatBottomDegree)) / (1 - sin(mapLatBottomDegree))));
+        log((1 + sin(mapLatBottomDegree)) / (1 - sin(mapLatBottomDegree)));
     final y = mapSize.height -
         ((worldMapWidth / 2 * log((1 + sin(radLat)) / (1 - sin(radLat)))) -
             mapOffsetY);
@@ -75,9 +84,24 @@ class GeoMarker extends AMarker {
   }
 }
 
+///
 class MarkerGroup {
+  ///
+  MarkerGroup({
+    required this.markers,
+    this.borderColor,
+    this.backgroundColor,
+    this.borderWidth,
+    this.markerSize,
+    this.usePinMarker = false,
+  }) : assert((borderWidth == null && markerSize == null && usePinMarker) ||
+      (borderWidth != null && markerSize != null && !usePinMarker));
+
+  ///
   final List<AMarker> markers;
+  ///
   Color? borderColor;
+  ///
   Color? backgroundColor;
 
   /// The border with of the circle/scare
@@ -88,14 +112,4 @@ class MarkerGroup {
 
   /// Provide an image to draw
   final bool usePinMarker;
-
-  MarkerGroup({
-    required this.markers,
-    this.borderColor,
-    this.backgroundColor,
-    this.borderWidth,
-    this.markerSize,
-    this.usePinMarker = false,
-  }) : assert((borderWidth == null && markerSize == null && usePinMarker) ||
-            (borderWidth != null && markerSize != null && !usePinMarker));
 }

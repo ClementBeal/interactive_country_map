@@ -12,10 +12,12 @@ import 'package:interactive_country_map/src/svg/svg_parser.dart';
 ///
 /// The SVG files must have `<path` with a field `id` otherwise the interactivity will not work
 class InteractiveMap extends StatefulWidget {
-  /// Use one of the predelivered map of the package
+  /// Use one of the pre-delivered map of the package
   InteractiveMap(
     MapEntity map, {
     super.key,
+    this.onError,
+    this.onLoaded,
     this.onCountrySelected,
     this.theme = const InteractiveMapTheme(),
     this.loadingBuilder,
@@ -27,10 +29,12 @@ class InteractiveMap extends StatefulWidget {
     this.markers = const [],
   }) : loader = MapEntityLoader(entity: map);
 
-  // Load a map from an user's file
+  /// Load a map from an user's file
   InteractiveMap.file(
     File file, {
     super.key,
+    this.onError,
+    this.onLoaded,
     this.onCountrySelected,
     this.theme = const InteractiveMapTheme(),
     this.loadingBuilder,
@@ -42,10 +46,12 @@ class InteractiveMap extends StatefulWidget {
     this.markers = const [],
   }) : loader = FileLoader(file: file);
 
-  // Load a map from the assets of the app
+  /// Load a map from the assets of the app
   InteractiveMap.asset(
     String assetName, {
     super.key,
+    this.onError,
+    this.onLoaded,
     this.onCountrySelected,
     this.theme = const InteractiveMapTheme(),
     this.loadingBuilder,
@@ -67,11 +73,18 @@ class InteractiveMap extends StatefulWidget {
   /// Draw layers of markers over the map
   final List<MarkerGroup> markers;
 
-  // Theme
+  /// Theme
   final InteractiveMapTheme theme;
 
   /// Widget we display during the loading of the map
   final Widget Function(BuildContext context)? loadingBuilder;
+
+  /// Provide a callback when loaded
+  final Future<void> Function(String svgData)? onLoaded;
+
+  /// Error routine
+  final Widget? Function(FlutterErrorDetails errorDetails, String? svgData)?
+      onError;
 
   /// Minimum value of a scale. Must be greater than 0
   final double minScale;
@@ -89,23 +102,24 @@ class InteractiveMap extends StatefulWidget {
   final String? selectedCode;
 
   @override
-  State<InteractiveMap> createState() => InteractiveMapState();
+  State<InteractiveMap> createState() => _InteractiveMapState();
 }
 
-class InteractiveMapState extends State<InteractiveMap> {
+// Good practice to hide the State class as a Library private member
+class _InteractiveMapState extends State<InteractiveMap> {
+  //
   String? svgData;
+  Future<String>? _future;
   late final TransformationController _controller;
   late double _scale;
 
   @override
   void initState() {
     super.initState();
-
     _scale = widget.initialScale ?? 1.0;
     final scaleMatrix = Matrix4.identity()..scale(_scale);
     _controller = TransformationController(scaleMatrix);
-
-    Future.delayed(Duration.zero, loadMap);
+    _future = loadMap();
   }
 
   @override
@@ -113,7 +127,8 @@ class InteractiveMapState extends State<InteractiveMap> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.loader != widget.loader) {
-      loadMap();
+      _future = loadMap();
+      setState(() {});
     }
 
     if (oldWidget.currentScale != widget.currentScale) {
@@ -123,43 +138,87 @@ class InteractiveMapState extends State<InteractiveMap> {
   }
 
   /// Load the SVG's data
-  Future<void> loadMap() async {
-    final tmp = await widget.loader.load(context);
-
-    setState(() {
-      svgData = tmp;
-    });
+  Future<String> loadMap() async {
+    svgData = null; // so to test for null
+    final svg = await widget.loader.load(context);
+    svgData = svg;
+    await widget.onLoaded?.call(svg);
+    return svg;
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (svgData != null) {
-      return InteractiveViewer(
-        transformationController: _controller,
-        minScale: widget.minScale,
-        maxScale: 200,
-        panEnabled: true,
-        onInteractionUpdate: (details) {
-          setState(() {
-            _scale = _controller.value[0];
-          });
-        },
-        child: GeographicMap(
-          svgData: svgData!,
-          theme: widget.theme,
-          onCountrySelected: widget.onCountrySelected,
-          selectedCode: widget.selectedCode,
-          markers: widget.markers,
-          scale: _scale,
-        ),
+  Widget build(BuildContext context) => FutureBuilder<String>(
+        key: ValueKey<State>(this),
+        future: _future,
+        builder: _buildMap,
       );
-    } else {
-      return widget.loadingBuilder?.call(context) ?? const SizedBox.shrink();
+
+  /// Returns the appropriate widget when the Future is completed.
+  Widget _buildMap(BuildContext context, AsyncSnapshot<String> snapshot) {
+    //
+    Widget? mapWidget;
+    FlutterErrorDetails? errorDetails;
+
+    if (snapshot.connectionState == ConnectionState.done) {
+      //
+      if (snapshot.hasError) {
+        // Optionally supply a Widget
+        mapWidget = _svgDataError(snapshot.error!, svgData, 'loadMap() failed');
+      }
+
+      // Display an interactive map
+      if (svgData != null && mapWidget == null) {
+        //
+        try {
+          //
+          // throw Exception('Error Test!');   // <--- Uncomment this line to see the _svgDataError() run
+
+          mapWidget = InteractiveViewer(
+            transformationController: _controller,
+            minScale: widget.minScale,
+            maxScale: widget.maxScale,
+            onInteractionUpdate: (details) {
+              setState(() {
+                _scale = _controller.value[0];
+              });
+            },
+            child: GeographicMap(
+              svgData: svgData!,
+              theme: widget.theme,
+              onCountrySelected: widget.onCountrySelected,
+              selectedCode: widget.selectedCode,
+              markers: widget.markers,
+              scale: _scale,
+            ),
+          );
+        } catch (e, stack) {
+          // Optionally supply a Widget
+          mapWidget = _svgDataError(e, svgData, 'InteractiveViewer() failed', stack: stack);
+        }
+      }
     }
+    // A Widget must be supplied.
+    return mapWidget ??=
+        widget.loadingBuilder?.call(context) ?? const SizedBox.shrink();
+  }
+
+  // Handle any errors. Optionally supply a Widget
+  Widget? _svgDataError(Object exception, String? svgData, String message, {StackTrace? stack}) {
+    //
+    final errorDetails = FlutterErrorDetails(
+      exception: exception,
+      stack: stack ?? (exception is Error ? exception.stackTrace : null),
+      library: 'interactive_map.dart',
+      context: ErrorDescription(message),
+    );
+    // Optionally supply a Widget
+    return widget.onError?.call(errorDetails, svgData);
   }
 }
 
+///
 class GeographicMap extends StatefulWidget {
+  ///
   const GeographicMap({
     super.key,
     required this.svgData,
@@ -170,12 +229,22 @@ class GeographicMap extends StatefulWidget {
     required this.scale,
   });
 
+  ///
   final String svgData;
+
+  ///
   final InteractiveMapTheme theme;
+
+  ///
   final void Function(String code)? onCountrySelected;
+
+  ///
   final List<MarkerGroup> markers;
+
+  ///
   final double scale;
 
+  ///
   final String? selectedCode;
 
   @override

@@ -1,7 +1,7 @@
-import 'package:example/screens/france_departments_screen.dart';
-import 'package:example/screens/france_wolf_screen.dart';
-import 'package:example/screens/lat_long_markers_screen.dart';
-import 'package:example/screens/world_map_screen.dart';
+import 'screens/france_departments_screen.dart';
+import 'screens/france_wolf_screen.dart';
+import 'screens/lat_long_markers_screen.dart';
+import 'screens/world_map_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {

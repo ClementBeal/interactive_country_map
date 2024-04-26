@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:interactive_country_map/interactive_country_map.dart';
 
+import 'svg_error_screen.dart';
+
+
 class FranceDepartmentsPage extends StatefulWidget {
   const FranceDepartmentsPage({super.key});
 
@@ -23,6 +26,11 @@ class _FranceDepartmentsPageState extends State<FranceDepartmentsPage> {
           Expanded(
             child: InteractiveMap(
               map,
+              onError: (details, svgData) {
+                final String message = details.exceptionAsString();
+                final StackTrace? stack = details.stack;
+                return svgErrorWidget(message);
+              },
               theme: InteractiveMapTheme(
                 borderColor: Colors.green.shade800,
                 borderWidth: 1.0,

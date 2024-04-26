@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:interactive_country_map/interactive_country_map.dart';
 
+import 'svg_error_screen.dart';
+
 class FrancePlot extends StatefulWidget {
   const FrancePlot({super.key});
 
@@ -9,22 +11,6 @@ class FrancePlot extends StatefulWidget {
 }
 
 class _FrancePlotState extends State<FrancePlot> {
-  final _mapKey = GlobalKey<InteractiveMapState>();
-
-  @override
-  void initState() {
-    super.initState();
-
-    Future.delayed(
-      const Duration(seconds: 1),
-      () async {
-        final countryMap =
-            await SvgParser().parse(_mapKey.currentState!.svgData!);
-        countryMap.getCountryCodeFromLocation(40.7128, -74.0060);
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,8 +19,17 @@ class _FrancePlotState extends State<FrancePlot> {
         children: [
           Flexible(
             child: InteractiveMap(
-              key: _mapKey,
               MapEntity.franceDepartments,
+              onLoaded: (svgData) async {
+                final countryMap = await SvgParser().parse(svgData);
+                countryMap.getCountryCodeFromLocation(40.7128, -74.0060);
+                // throw Exception('Test onError()');   // <--- Uncomment this line to see the onError() run
+              },
+              onError: (details, svgData) {
+                final String message = details.exceptionAsString();
+                final StackTrace? stack = details.stack;
+                return svgErrorWidget(message);
+              },
               theme: InteractiveMapTheme(
                   borderColor: Colors.green.shade800,
                   borderWidth: 1.0,

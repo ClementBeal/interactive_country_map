@@ -5,12 +5,9 @@ import 'package:interactive_country_map/src/interactive_map_theme.dart';
 import 'package:interactive_country_map/src/svg/markers.dart';
 import 'package:interactive_country_map/src/svg/svg_parser.dart';
 
+///
 class MarkerPainter extends CustomPainter {
-  final CountryMap countryMap;
-  final InteractiveMapTheme theme;
-  final List<MarkerGroup> markers;
-  final double scale;
-
+  ///
   MarkerPainter({
     super.repaint,
     required this.countryMap,
@@ -18,6 +15,16 @@ class MarkerPainter extends CustomPainter {
     required this.markers,
     required this.scale,
   });
+  ///
+  final CountryMap countryMap;
+  ///
+  final InteractiveMapTheme theme;
+  ///
+  final List<MarkerGroup> markers;
+  ///
+  final double scale;
+
+
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -31,9 +38,9 @@ class MarkerPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.fill;
 
-    for (var markerGroup in markers) {
+    for (final markerGroup in markers) {
       final pointsToDraw =
-          markerGroup.markers.map((e) => _getOffset(e, size)).toList();
+      markerGroup.markers.map((e) => _getOffset(e, size)).toList();
 
       if (markerGroup.usePinMarker) {
         pointPainter.color = const Color(0xffeb2f06);
@@ -45,7 +52,7 @@ class MarkerPainter extends CustomPainter {
           ..style = PaintingStyle.fill;
 
         // we draw a custom pin. Until I find an easy way to draw an image, I'll keep this solution
-        for (var marker in pointsToDraw) {
+        for (final marker in pointsToDraw) {
           final path = Path()
             ..moveTo(marker.dx, marker.dy)
             ..relativeLineTo(-7 / scale, -15 / scale)
@@ -64,7 +71,7 @@ class MarkerPainter extends CustomPainter {
           ..color = markerGroup.borderColor ?? Colors.black
           ..strokeWidth = markerGroup.borderWidth! / scale;
 
-        for (var marker in pointsToDraw) {
+        for (final marker in pointsToDraw) {
           canvas.drawCircle(
               marker, markerGroup.markerSize! / scale, borderPointPainter);
           canvas.drawCircle(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:interactive_country_map/interactive_country_map.dart';
 
+import 'svg_error_screen.dart';
+
 class LatLongMarkersScreen extends StatelessWidget {
   const LatLongMarkersScreen({super.key});
 
@@ -13,6 +15,11 @@ class LatLongMarkersScreen extends StatelessWidget {
           Flexible(
             child: InteractiveMap(
               MapEntity.japan,
+              onError: (details, svgData) {
+                final String message = details.exceptionAsString();
+                final StackTrace? stack = details.stack;
+                return svgErrorWidget(message);
+              },
               theme: InteractiveMapTheme(
                 backgroundColor: Colors.grey.shade200,
                 defaultCountryColor: Colors.green.shade200,
