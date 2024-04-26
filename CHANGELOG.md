@@ -1,4 +1,9 @@
 
+## 0.0.9
+
+- try-catch around InteractiveViewer()
+- _svgDataError() to catch errors
+
 ## 0.0.8
 
 - svgData = null; in loadMap() to catch any errors

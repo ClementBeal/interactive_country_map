@@ -23,7 +23,7 @@ class _FrancePlotState extends State<FrancePlot> {
               onLoaded: (svgData) async {
                 final countryMap = await SvgParser().parse(svgData);
                 countryMap.getCountryCodeFromLocation(40.7128, -74.0060);
-                throw Exception('Test onError()');   // <--- Uncomment this line to see the onError() run
+                // throw Exception('Test onError()');   // <--- Uncomment this line to see the onError() run
               },
               onError: (details, svgData) {
                 final String message = details.exceptionAsString();
